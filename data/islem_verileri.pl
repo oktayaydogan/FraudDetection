@@ -1,9 +1,8 @@
 :- module(islem_verileri, [islem/6]).
 
 % İşlem kayıtları: Kullanıcı, İşlem Miktarı, Zaman Damgası, Konum, Cihaz, Davranış Süresi
-islem(kullanici1, 500, 10, 'Türkiye', 'Chrome', 30). % Ortalama süreye yakın
-islem(kullanici1, 300, 12, 'Türkiye', 'Chrome', 28).
-islem(kullanici1, 200, 15, 'Türkiye', 'Chrome', 35).
-islem(kullanici1, 100, 20, 'Türkiye', 'Safari', 5).  % Çok hızlı işlem
-islem(kullanici1, 5000, 25, 'Almanya', 'Chrome', 150). % Çok yavaş işlem
-
+islem(kullanici1, 500, 10, 'Türkiye', 'Chrome', 30).
+islem(kullanici1, 300, 12, 'Almanya', 'Chrome', 28).  % Türkiye => Almanya (risk)
+islem(kullanici1, 200, 14, 'Türkiye', 'Chrome', 35).  % Almanya => Türkiye (risk)
+islem(kullanici1, 100, 16, 'ABD', 'Safari', 5).       % Türkiye => ABD (risk)
+islem(kullanici1, 5000, 18, 'Fransa', 'Chrome', 150). % ABD => Fransa (risk)
