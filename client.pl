@@ -25,7 +25,7 @@ sorgula :-
         writeln('Konum uyuşmazlığı var!');
         writeln('Konum uyuşmazlığı yok.')),
 
-    writeln('5. Farklı konumlarda kısa süreli işlem kontrolü:'),
-    (farkli_konum:farkli_konum_kontrol(kullanici1) ->
-        writeln('Farklı konumda kısa süreli işlem bulundu!');
-        writeln('Farklı konumda kısa süreli işlem bulunamadı.')).
+    writeln('5. Farklı konumlarda kısa süreli işlem risk skoru:'),
+    farkli_konum:farkli_konum_risk(kullanici1, Risk),
+    format('Toplam risk puanı: ~w~n', [Risk]),
+    (Risk > 10 -> writeln('Risk eşik değeri aşıldı: Şüpheli işlem!'); writeln('Risk eşik değeri aşılmadı: Normal işlem.')).
