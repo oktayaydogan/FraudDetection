@@ -5,6 +5,7 @@
 :- use_module('rules/farkli_konum'). % Farklı konum kuralları
 :- use_module('rules/yeni_cihaz'). % Yeni cihaz kuralları
 :- use_module('rules/davranis_analizi'). % Kullanıcı davranış analizi
+:- use_module('rules/ayni_ip_farkli_kullanici'). % Aynı IP adresinden farklı kullanıcı kontrolü
 
 % Merkezi sorgu
 sorgula :-
@@ -52,4 +53,11 @@ sorgula :-
     writeln('7. Kullanıcı davranış sapması kontrolü:'),
     (davranis_analizi:davranis_sapmasi(kullanici1) ->
         writeln('Davranış süresi normalden sapıyor!');
-        writeln('Davranış süresi normal.')).
+        writeln('Davranış süresi normal.')),
+
+    writeln('-----------------------------------'),
+
+    writeln('8. Aynı IP adresinden işlem kontrolü:'),
+    (ayni_ip_farkli_kullanici:ayni_ip_kontrol('192.168.1.1', Sonuc),
+    writeln(Sonuc);
+    writeln('IP kontrolü yapılamadı.')).

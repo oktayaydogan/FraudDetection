@@ -3,7 +3,7 @@
 
 % Belirli bir zaman aralığında aynı kullanıcının işlem sayısını sayan kural
 islem_sayisi(Kullanici, Baslangic, Bitis, Sayi) :-
-    findall(1, (islem(Kullanici, _, Zaman, _, _, _), Zaman >= Baslangic, Zaman =< Bitis), Islemler),
+    findall(1, (islem(Kullanici, _, Zaman, _, _, _, _), Zaman >= Baslangic, Zaman =< Bitis), Islemler),
     length(Islemler, Sayi),
     writeln(['İşlem sayısı hesaplandı:', Kullanici, '=>', Sayi]).
 

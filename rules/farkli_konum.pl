@@ -3,7 +3,7 @@
 
 % Kullanıcının işlemlerini listeleme: Miktar, Zaman, Konum, Cihaz
 kullanici_islemleri(Kullanici, Islemler) :-
-    findall((Miktar, Zaman, Konum, Cihaz), islem(Kullanici, Miktar, Zaman, Konum, Cihaz, _), Islemler),
+    findall((Miktar, Zaman, Konum, Cihaz), islem(Kullanici, Miktar, Zaman, Konum, Cihaz, _, _), Islemler),
     writeln(['Kullanıcı işlemleri listelendi:', Islemler]). % Debugging mesajı
 
 % Risk skorlama için farklı konum kontrolü

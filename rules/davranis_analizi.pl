@@ -3,7 +3,7 @@
 
 % Kullanıcının davranış sürelerinin ortalamasını hesaplama
 davranis_ortalama(Kullanici, Ortalama) :-
-    findall(Sure, islem(Kullanici, _, _, _, _, Sure), Sureler),
+    findall(Sure, islem(Kullanici, _, _, _, _, Sure, _), Sureler),
     toplam(Sureler, Toplam),
     length(Sureler, Say),
     Say > 0,
@@ -12,7 +12,7 @@ davranis_ortalama(Kullanici, Ortalama) :-
 
 % Kullanıcının davranış sürelerinin standart sapmasını hesaplama
 davranis_standart_sapma(Kullanici, Sapma) :-
-    findall(Sure, islem(Kullanici, _, _, _, _, Sure), Sureler),
+    findall(Sure, islem(Kullanici, _, _, _, _, Sure, _), Sureler),
     davranis_ortalama(Kullanici, Ortalama),
     findall(SqDiff, (member(Sure, Sureler), SqDiff is (Sure - Ortalama) ** 2), KareFarklar),
     toplam(KareFarklar, KareToplam),
@@ -32,7 +32,7 @@ toplam([H|T], Toplam) :-
 davranis_sapmasi(Kullanici) :-
     davranis_ortalama(Kullanici, Ortalama),
     davranis_standart_sapma(Kullanici, Sapma),
-    findall((Sure, Zaman), islem(Kullanici, _, Zaman, _, _, Sure), TumIslemler),
+    findall((Sure, Zaman), islem(Kullanici, _, Zaman, _, _, Sure, _), TumIslemler),
     sort(2, @>=, TumIslemler, [(SonSure, _)|_]), % Son işlem süresini bul
     Limit is Sapma * 1,                          % Sapma katsayısını azaltıyoruz
     writeln(['Sapma limiti:', Limit]),           % Debugging
