@@ -3,7 +3,7 @@
 
 % Kullanıcının işlemlerini listeleme: Miktar, Zaman, Konum, Cihaz
 kullanici_islemleri(Kullanici, Islemler) :-
-    findall((Miktar, Zaman, Konum, Cihaz), islem(Kullanici, Miktar, Zaman, Konum, Cihaz), Islemler).
+    findall((Miktar, Zaman, Konum, Cihaz), islem(Kullanici, Miktar, Zaman, Konum, Cihaz, _), Islemler).
 
 % Risk skorlama için farklı konum kontrolü
 farkli_konum_risk(Kullanici, ToplamRisk) :-

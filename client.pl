@@ -4,6 +4,7 @@
 :- use_module('rules/islem_konumu'). % İşlem konumu kuralları
 :- use_module('rules/farkli_konum'). % Farklı konum kuralları
 :- use_module('rules/yeni_cihaz'). % Yeni cihaz kuralları
+:- use_module('rules/davranis_analizi'). % Kullanıcı davranış analizi
 
 % Merkezi sorgu
 sorgula :-
@@ -34,4 +35,9 @@ sorgula :-
     writeln('6. Yeni cihaz tespiti:'),
     (yeni_cihaz:yeni_cihaz_tespiti(kullanici1) ->
         writeln('Yeni cihazdan işlem tespit edildi!');
-        writeln('Yeni cihaz kullanılmadı.')).
+        writeln('Yeni cihaz kullanılmadı.')),
+
+    writeln('7. Kullanıcı davranış sapması kontrolü:'),
+    (davranis_analizi:davranis_sapmasi(kullanici1) ->
+        writeln('Davranış süresi normalden sapıyor!');
+        writeln('Davranış süresi normal.')).
