@@ -1,5 +1,5 @@
 :- module(islem_sikligi, [islem_sayisi/4, supheli_islem/3]).
-:- use_module('../data/islem_verileri'). % Veriler dahil ediliyor
+:- use_module('../data/islem_verileri'). % Verileri dahil ediyoruz
 
 % Belirli bir zaman aralığında aynı kullanıcının işlem sayısını sayan kural
 islem_sayisi(Kullanici, Baslangic, Bitis, Sayi) :-

@@ -1,5 +1,5 @@
 :- module(islem_konumu, [konum_uyusmazligi/1]).
-:- use_module('../data/islem_verileri'). % Verileri dahil ediyoruz
+:- use_module('../data/islem_verileri'). % Veriler dahil ediliyor
 
 % Kullanıcının önceki işlemlerindeki konumları listeleme
 kullanici_konumlari(Kullanici, Konumlar) :-
