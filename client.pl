@@ -3,6 +3,7 @@
 :- use_module('rules/islem_miktari'). % İşlem miktarı kuralları
 :- use_module('rules/islem_konumu'). % İşlem konumu kuralları
 :- use_module('rules/farkli_konum'). % Farklı konum kuralları
+:- use_module('rules/yeni_cihaz'). % Yeni cihaz kuralları
 
 % Merkezi sorgu
 sorgula :-
@@ -28,4 +29,9 @@ sorgula :-
     writeln('5. Farklı konumlarda kısa süreli işlem risk skoru:'),
     farkli_konum:farkli_konum_risk(kullanici1, Risk),
     format('Toplam risk puanı: ~w~n', [Risk]),
-    (Risk > 10 -> writeln('Risk eşik değeri aşıldı: Şüpheli işlem!'); writeln('Risk eşik değeri aşılmadı: Normal işlem.')).
+    (Risk > 10 -> writeln('Risk eşik değeri aşıldı: Şüpheli işlem!'); writeln('Risk eşik değeri aşılmadı: Normal işlem.')),
+
+    writeln('6. Yeni cihaz tespiti:'),
+    (yeni_cihaz:yeni_cihaz_tespiti(kullanici1) ->
+        writeln('Yeni cihazdan işlem tespit edildi!');
+        writeln('Yeni cihaz kullanılmadı.')).

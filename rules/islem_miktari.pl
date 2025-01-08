@@ -3,7 +3,7 @@
 
 % Kullanıcının işlem ortalamasını hesaplama
 ortalama(Kullanici, Ortalama) :-
-    findall(Miktar, islem(Kullanici, Miktar, _, _), Islemler),
+    findall(Miktar, islem(Kullanici, Miktar, _, _, _), Islemler),
     toplam(Islemler, Toplam),
     length(Islemler, Say),
     Say > 0,

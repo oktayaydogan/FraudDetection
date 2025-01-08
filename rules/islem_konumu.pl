@@ -3,7 +3,7 @@
 
 % Kullanıcının önceki işlemlerindeki konumları listeleme
 kullanici_konumlari(Kullanici, Konumlar) :-
-    findall(Konum, islem(Kullanici, _, _, Konum), Konumlar).
+    findall(Konum, islem(Kullanici, _, _, Konum, _), Konumlar).
 
 % Konum uyuşmazlığını kontrol eden kural
 konum_uyusmazligi(Kullanici) :-
