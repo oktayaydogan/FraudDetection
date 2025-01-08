@@ -1,4 +1,4 @@
-:- module(ayni_ip_farkli_kullanici, [ayni_ip_kontrol/2]).
+:- module(ortak_ip_kullanimi, [ayni_ip_kontrol/2]).
 :- use_module('../data/islem_verileri'). % Veriler dahil ediliyor
 
 % Belirli bir IP adresinden işlem yapan kullanıcıları listeleme

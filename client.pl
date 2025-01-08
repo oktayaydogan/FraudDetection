@@ -5,7 +5,7 @@
 :- use_module('rules/farkli_konum'). % Farklı konum kuralları
 :- use_module('rules/yeni_cihaz'). % Yeni cihaz kuralları
 :- use_module('rules/davranis_analizi'). % Kullanıcı davranış analizi
-:- use_module('rules/ayni_ip_farkli_kullanici'). % Aynı IP adresinden farklı kullanıcı kontrolü
+:- use_module('rules/ortak_ip_kullanimi'). % Aynı IP adresinden farklı kullanıcı kontrolü
 
 sorgula(Kullanici) :-
     format('~nKullanıcı: ~w~n', [Kullanici]),
