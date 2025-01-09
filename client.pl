@@ -6,58 +6,61 @@
 :- use_module('rules/yeni_cihaz'). % Yeni cihaz kuralları
 :- use_module('rules/davranis_analizi'). % Kullanıcı davranış analizi
 :- use_module('rules/ortak_ip_kullanimi'). % Aynı IP adresinden farklı kullanıcı kontrolü
+:- use_module('rules/odeme_suresi'). % Ödeme süresi analizi
+:- use_module('rules/yeni_odeme_yontemi'). % Yeni ödeme yöntemi kontrolü
+:- use_module('rules/odeme_yontemi_riski'). % Ödeme yöntemi riski kontrolü
+:- use_module('rules/tekrarli_bilgi_kontrolu'). % Tekrarlı bilgi kontrolü
+:- use_module('rules/para_iade_kontrolu'). % Para iade kontrolü
+:- use_module('rules/oturum_bilgisi_degisim_kontrolu'). % Oturum bilgisi değişikliği kontrolü
 
+% İşlem risk skoru hesaplama
+risk_skoru_islem(IslemId, Risk) :-
+    islem(IslemId, Kullanici, Miktar, _, _, _, _, _, _, _, _),
+    (islem_miktari:anormal_islem(Kullanici, Miktar) -> P1 = 6; P1 = 0),
+    (islem_konumu:konum_uyusmazligi(Kullanici) -> P2 = 3; P2 = 0),
+    (yeni_cihaz:yeni_cihaz_tespiti(Kullanici) -> P3 = 4; P3 = 0),
+    (islem_sikligi:supheli_islem(Kullanici, 0, 24) -> P4 = 5; P4 = 0),
+    (yeni_odeme_yontemi:yeni_odeme_yontemi(Kullanici) -> P5 = 2; P5 = 0),
+    (para_iade_kontrolu:para_iade_riski(Kullanici) -> P6 = 3; P6 = 0),
+    Risk is P1 + P2 + P3 + P4 + P5 + P6.
+
+% Kullanıcı risk skoru hesaplama
+risk_skoru_kullanici(Kullanici, ToplamRisk) :-
+    findall(IslemId, islem(IslemId, Kullanici, _, _, _, _, _, _, _, _, _), IslemList),
+    findall(Risk, (member(IslemId, IslemList), risk_skoru_islem(IslemId, Risk)), RiskList),
+    sum_list(RiskList, ToplamRisk).
+
+% Kullanıcı sorgulama
 sorgula(Kullanici) :-
     format('~nKullanıcı: ~w~n', [Kullanici]),
-    islem_sikligi:islem_sayisi(Kullanici, 0, 24, Sayi),
-    format('1. Kullanıcının işlem sayısı: ~w~n', [Sayi]),
-    writeln('-----------------------------------'),
+    risk_skoru_kullanici(Kullanici, ToplamRisk),
+    format('Toplam Risk Skoru: ~w~n', [ToplamRisk]),
+    (ToplamRisk > 50 -> writeln('-> Yüksek Risk: İşlem incelemeye alınmalı.');
+    writeln('-> Düşük Risk: İşlem normal.')),
+    writeln('-----------------------------------').
 
-    writeln('2. Kullanıcının şüpheli işlem durumu:'),
-    (islem_sikligi:supheli_islem(Kullanici, 0, 24) ->
-        writeln('-> Şüpheli işlem var!');
-        writeln('-> Şüpheli işlem yok.')),
-    writeln('-----------------------------------'),
-
-    writeln('3. Anormal işlem durumu:'),
-    (islem_miktari:anormal_islem(Kullanici, 5000) ->
-        writeln('-> Anormal işlem tespit edildi!');
-        writeln('-> Anormal işlem yok.')),
-    writeln('-----------------------------------'),
-
-    writeln('4. Konum uyuşmazlığı kontrolü:'),
-    (islem_konumu:konum_uyusmazligi(Kullanici) ->
-        writeln('-> Konum uyuşmazlığı var!');
-        writeln('-> Konum uyuşmazlığı yok.')),
-    writeln('-----------------------------------'),
-
-    writeln('5. Farklı konumlarda kısa süreli işlem risk skoru:'),
-    farkli_konum:farkli_konum_risk(Kullanici, Risk),
-    format('-> Toplam risk puanı: ~w~n', [Risk]),
-    (Risk > 10 -> writeln('-> Risk eşik değeri aşıldı: Şüpheli işlem!'); writeln('-> Risk eşik değeri aşılmadı: Normal işlem.')),
-    writeln('-----------------------------------'),
-
-    writeln('6. Yeni cihaz tespiti:'),
-    (yeni_cihaz:yeni_cihaz_tespiti(Kullanici) ->
-        writeln('-> Yeni cihazdan işlem tespit edildi!');
-        writeln('-> Yeni cihaz kullanılmadı.')),
-    writeln('-----------------------------------'),
-
-    writeln('7. Kullanıcı davranış sapması kontrolü:'),
-    (davranis_analizi:davranis_sapmasi(Kullanici) ->
-        writeln('-> Davranış süresi normalden sapıyor!');
-        writeln('-> Davranış süresi normal.')),
-    writeln('-----------------------------------'),
-
-    writeln('8. Aynı IP adresinden işlem kontrolü:'),
-    findall(IP, islem(_, _, _, _, _, _, IP), IPListesi),
-    list_to_set(IPListesi, UnikIPListesi),
-    forall(member(IP, UnikIPListesi), (
-        ayni_ip_farkli_kullanici:ayni_ip_kontrol(IP, Sonuc),
-        format('-> IP: ~w => ~w~n', [IP, Sonuc])
-    )).
-
+% Tüm kullanıcıları sorgula
 tüm_kullanicilari_sorgula :-
-    findall(Kullanici, islem(Kullanici, _, _, _, _, _, _), KullaniciListesi),
+    findall(Kullanici, islem(_, Kullanici, _, _, _, _, _, _, _, _, _), KullaniciListesi),
     list_to_set(KullaniciListesi, UnikKullanicilar),
     forall(member(Kullanici, UnikKullanicilar), sorgula(Kullanici)).
+
+% İşlem ID'ye göre sorgulama
+islem_id_sorgula(IslemId) :-
+    islem(IslemId, Kullanici, Miktar, Zaman, Konum, Cihaz, DavranisSure, IslemTuru, IP, OdemeYontemi, Ekstra),
+    format('~nİşlem ID: ~w~n', [IslemId]),
+    format('Kullanıcı: ~w~n', [Kullanici]),
+    format('Miktar: ~w, Zaman: ~w, Konum: ~w, Cihaz: ~w~n', [Miktar, Zaman, Konum, Cihaz]),
+    format('Davranış Süresi: ~w, İşlem Türü: ~w, IP: ~w, Ödeme Yöntemi: ~w, Ekstra: ~w~n', 
+           [DavranisSure, IslemTuru, IP, OdemeYontemi, Ekstra]),
+    writeln('-----------------------------------'),
+    risk_skoru_islem(IslemId, Risk),
+    format('İşlem Risk Skoru: ~w~n', [Risk]),
+    writeln('-----------------------------------').
+
+% Test sorguları
+% sorgula(kullanici1).
+% sorgula(kullanici2).
+% islem_id_sorgula(1).
+% islem_id_sorgula(6).
+% tüm_kullanicilari_sorgula.
