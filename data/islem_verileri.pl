@@ -4,7 +4,7 @@
 
 % Kullanıcı 1
 islem(1, kullanici1, 500, 10, 'Türkiye', 'Chrome', 30, 'islem', '192.168.1.1', 'Kredi Kartı', 'user1@example.com').
-islem(2, kullanici1, 300, 15, 'Türkiye', 'Safari', 28, 'islem', '192.168.1.1', 'Banka Kartı', 'user1@example.com').
+islem(2, kullanici1, 300, 15, 'Türkiye', 'Chrome', 28, 'islem', '192.168.1.1', 'Banka Kartı', 'user1@example.com').
 islem(3, kullanici1, 200, 20, 'ABD', 'Edge', 35, 'islem', '10.0.0.2', 'Havale', 'user1@example.com').
 islem(4, kullanici1, 1000, 25, 'Türkiye', 'Firefox', 45, 'islem', '192.168.1.1', 'E-Cüzdan', 'user1@example.com').
 islem(5, kullanici1, 0, 8, 'Türkiye', 'Safari', 20, 'degisim', '192.168.1.1', 'Banka Kartı', 'user1@example.com'). % Bilgi değişikliği

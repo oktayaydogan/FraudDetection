@@ -1,5 +1,7 @@
 :- module(odeme_suresi, [odeme_suresi_sapmasi/1]).
 :- use_module('../data/islem_verileri'). % Veriler dahil ediliyor
+:- use_module('../utils/debug'). % Debug mesajları
+:- use_module('../utils/alert'). % Alert mesajları
 
 % Kullanıcının ödeme sürelerinin ortalamasını hesaplama
 ortalama_odeme_suresi(Kullanici, Ortalama) :-
@@ -8,20 +10,21 @@ ortalama_odeme_suresi(Kullanici, Ortalama) :-
     length(Sureler, Say),
     Say > 0,
     Ortalama is Toplam / Say,
-    writeln(['[DEBUG] Ortalama ödeme süresi:', Kullanici, '=>', Ortalama]).
+    debug_message('Ortalama ödeme süresi: ~w => ~w', [Kullanici, Ortalama]).
 
 % Kullanıcının son ödeme süresinin normalden sapıp sapmadığını kontrol et
 odeme_suresi_sapmasi(Kullanici) :-
     findall(DavranisSure, islem(_, Kullanici, _, _, _, _, DavranisSure, _, _, _, _), Sureler),
-    writeln(['[DEBUG] Kullanıcının ödeme süreleri:', Sureler]),
+    debug_message('Kullanıcının ödeme süreleri: ~w', [Sureler]),
     ortalama_odeme_suresi(Kullanici, Ortalama),
     son_odeme_suresi(Sureler, SonSure),
-    writeln(['[DEBUG] Son ödeme süresi:', SonSure]),
+    debug_message('Son ödeme süresi: ~w', [SonSure]),
     Limit is Ortalama * 1.5, % %50 sapma limiti
-    writeln(['[DEBUG] Sapma limiti:', Limit]),
+    debug_message('Sapma limiti: ~w', [Limit]),
     (SonSure > Ortalama + Limit ; SonSure < Ortalama - Limit ->
-        writeln('[ALERT] Ödeme süresi sapması tespit edildi!');
-        writeln('[INFO] Ödeme süresi normal.')).
+        alert_message('Ödeme süresi sapması tespit edildi: Kullanıcı: ~w, Son Süre: ~w, Limit: ~w', [Kullanici, SonSure, Limit]);
+        debug_message('Ödeme süresi normal: Kullanıcı: ~w, Son Süre: ~w', [Kullanici, SonSure])
+    ).
 
 % Son ödeme süresini bulma
 son_odeme_suresi(Sureler, SonSure) :-
@@ -37,4 +40,4 @@ toplam([H|T], Toplam) :-
 % odeme_suresi:ortalama_odeme_suresi(kullanici1, Ortalama).
 % odeme_suresi:ortalama_odeme_suresi(kullanici2, Ortalama).
 % odeme_suresi:odeme_suresi_sapmasi(kullanici1).
-% odeme_suresi:odeme_suresi_sapmasi(kullanici5)%
+% odeme_suresi:odeme_suresi_sapmasi(kullanici5).

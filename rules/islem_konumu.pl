@@ -1,20 +1,31 @@
-:- module(islem_konumu, [konum_uyusmazligi/1]).
-:- use_module('../data/islem_verileri').
+:- module(islem_konumu, [konum_uyusmazligi/1, test_konum_uyusmazligi/0]).
+:- use_module('../data/islem_verileri'). % Veriler dahil ediliyor
+:- use_module('../utils/debug'). % Debug mesajları
+:- use_module('../utils/alert'). % Uyarı mesajları
 
 % Kullanıcının önceki işlemlerindeki konumları listeleme
 kullanici_konumlari(Kullanici, Konumlar) :-
     findall(Konum, islem(_, Kullanici, _, _, Konum, _, _, _, _, _, _), Konumlar),
-    writeln(['[DEBUG] Kullanıcı konumları:', Kullanici, '=>', Konumlar]).
+    debug_message('Kullanıcı konumları: ~w => ~w', [Kullanici, Konumlar]).
 
 % Konum uyuşmazlığını kontrol eden kural
 konum_uyusmazligi(Kullanici) :-
     kullanici_konumlari(Kullanici, Konumlar),
     list_to_set(Konumlar, UnikKonumlar), % Konumların benzersiz listesini oluştur
     length(UnikKonumlar, Say),
-    writeln(['[DEBUG] Farklı konum sayısı:', Kullanici, '=>', Say]),
+    debug_message('Farklı konum sayısı: ~w => ~w', [Kullanici, Say]),
     Say > 1, % Birden fazla farklı konum varsa uyuşmazlık var
-    writeln('[ALERT] Konum uyuşmazlığı tespit edildi!').
+    alert_message('Konum uyuşmazlığı tespit edildi!').
 
-% Test sorgusu
-% islem_konumu:konum_uyusmazligi(kullanici1).
-% islem_konumu:konum_uyusmazligi(kullanici2).
+% Test konum uyuşmazlığı
+test_konum_uyusmazligi :-
+    writeln('Test: konum_uyusmazligi kontrolü başlıyor...'),
+    set_debug(true),
+    forall(member(Kullanici, [kullanici1, kullanici2, kullanici3, kullanici4]),
+           (writeln('----------------------------------'),
+            (konum_uyusmazligi(Kullanici) ->
+                format('Kullanıcı: ~w, Konum uyuşmazlığı tespit edildi.~n', [Kullanici]);
+                format('Kullanıcı: ~w, Konum uyuşmazlığı tespit edilemedi.~n', [Kullanici])))),
+    set_debug(false),
+    writeln('----------------------------------'),
+    writeln('Test tamamlandı.').
