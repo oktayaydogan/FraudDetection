@@ -34,14 +34,11 @@
 %
 % Açıklama:
 %   Belirli bir kullanıcının yaptığı tüm işlemleri (ID, Zaman, Konum, Cihaz) 
-%   çiftleri halinde listeleyip Islemler değişkenine aktarır.
+%   listeler.
 %
 % Parametreler:
 %   - Kullanici:  İşlemleri listelenecek kullanıcı kimliği.
 %   - Islemler:   Bulunan işlemlerin (ID, Zaman, Konum, Cihaz) şeklindeki listesi.
-%
-% Kullanım:
-%   ?- kullanici_islemleri(kullanici1, Islemler).
 %-----------------------------------------------------------------------------
 kullanici_islemleri(Kullanici, Islemler) :-
     findall((ID, Zaman, Konum, Cihaz),
@@ -54,15 +51,11 @@ kullanici_islemleri(Kullanici, Islemler) :-
 %
 % Açıklama:
 %   Kısa sürede farklı konumlardan işlem yapan kullanıcıların risk 
-%   skorunu hesaplar. kullanici_islemleri/2 ile elde edilen işlemleri 
-%   skor_hesapla/3 yardımıyla analiz eder ve ToplamRisk değeri döndürür.
+%   skorunu hesaplar. (Kural 5'i uygular.)
 %
 % Parametreler:
 %   - Kullanici:   Riski hesaplanacak kullanıcı.
 %   - ToplamRisk:  Kullanıcıya ait farklı konum risk skorunun toplam değeri.
-%
-% Kullanım:
-%   ?- farkli_konum_risk(kullanici1, Risk).
 %-----------------------------------------------------------------------------
 farkli_konum_risk(Kullanici, ToplamRisk) :-
     kullanici_islemleri(Kullanici, Islemler),
@@ -77,18 +70,11 @@ farkli_konum_risk(Kullanici, ToplamRisk) :-
 %   İşlem listesindeki ardışık çiftleri inceleyerek, konumlar farklı 
 %   ve iki işlem arasındaki zaman farkı (abs(Zaman2 - Zaman1)) 10 
 %   dakikadan az ise risk skorunu artırır. 
-%
-% Parametreler:
-%   - Islemler:    (ID, Zaman, Konum, Cihaz) şeklindeki işlem listesi.
-%   - MevcutRisk:  Hesaplanmaya başlanan mevcut risk skoru.
-%   - ToplamRisk:  Son hesaplanan toplam risk skoru (çıktı).
-%
-% Kullanım:
-%   ?- skor_hesapla([(...),(...)], 0, SonRisk).
 %-----------------------------------------------------------------------------
 skor_hesapla([(_, Zaman1, Konum1, _), (_, Zaman2, Konum2, _) | Kalan], MevcutRisk, ToplamRisk) :-
-    ( Konum1 \= Konum2, abs(Zaman2 - Zaman1) =< 10 ->
-        RiskArtis is 5,
+    ( Konum1 \= Konum2,
+      abs(Zaman2 - Zaman1) =< 10
+    ->  RiskArtis is 5,
         YeniRisk is MevcutRisk + RiskArtis,
         debug_message('Konum farkı tespit edildi: ~w => ~w, Yeni risk: ~w',
                       [Konum1, Konum2, YeniRisk])
@@ -105,15 +91,11 @@ skor_hesapla([], ToplamRisk, ToplamRisk).
 % test_farkli_konum/0
 %
 % Açıklama:
-%   Bazı kullanıcılar üzerinde (kullanici1, kullanici2, vb.) farkli_konum_risk/2 
-%   predikatını dener ve sonucu ekrana yazdırır. Debug modunu geçici olarak açıp
-%   kapatarak ayrıntılı bilgi alınabilir.
-%
-% Kullanım:
-%   ?- test_farkli_konum.
+%   Bazı kullanıcılar üzerinde farkli_konum_risk/2 
+%   predikatını dener ve sonucu ekrana yazdırır.
 %-----------------------------------------------------------------------------
 test_farkli_konum :-
-    writeln('Test: farkli_konum_risk kontrolü başlıyor...'),
+    writeln('--- [TEST] Kural 5 (Farklı Konumu) Kontrolü Başlıyor... ---'),
     set_debug(true),
     forall(
         member(Kullanici, [kullanici1, kullanici2, kullanici3, kullanici4]),
@@ -127,4 +109,4 @@ test_farkli_konum :-
     ),
     set_debug(false),
     writeln('----------------------------------'),
-    writeln('Test tamamlandı.').
+    writeln('--- [TEST] Tamamlandı. ---').

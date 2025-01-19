@@ -161,7 +161,7 @@ davranis_sapmasi(Kullanici) :-
 %   ?- test_davranis_analizi.
 %-----------------------------------------------------------------------------
 test_davranis_analizi :-
-    writeln('Test: davranis_sapmasi kontrolü başlıyor...'),
+    writeln('--- [TEST] Kural 8 (İşlem Sıklığı) Kontrolü Başlıyor... ---'),
     set_debug(true),  % Debug modunu aç
     forall(
         member(Kullanici, [kullanici1, kullanici2, kullanici3, kullanici4]),
@@ -175,4 +175,4 @@ test_davranis_analizi :-
     ),
     set_debug(false), % Debug modunu kapat
     writeln('----------------------------------'),
-    writeln('Test tamamlandı.').
+    writeln('--- [TEST] Tamamlandı. ---').

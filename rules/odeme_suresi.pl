@@ -1,4 +1,8 @@
-:- module(odeme_suresi, [odeme_suresi_sapmasi/1, ortalama_odeme_suresi/2, test_odeme_suresi/0]).
+:- module(odeme_suresi, [
+    odeme_suresi_sapmasi/1,
+    ortalama_odeme_suresi/2,
+    test_odeme_suresi/0
+]).
 
 :- use_module('../data/islem_verileri'). % Veriler dahil ediliyor
 :- use_module('../utils/debug').         % Debug mesajları
@@ -6,6 +10,7 @@
 
 % ----------------------------------------------------------------------
 % 1) Kullanıcının ortalama ödeme süresini hesaplama
+%    (Davranış süresi = tuşlama süresi, hızlı ödeme vb. metrikler)
 % ----------------------------------------------------------------------
 ortalama_odeme_suresi(Kullanici, Ortalama) :-
     findall(DavranisSure,
@@ -19,6 +24,7 @@ ortalama_odeme_suresi(Kullanici, Ortalama) :-
 
 % ----------------------------------------------------------------------
 % 2) Kullanıcının son ödeme süresinin ortalamadan sapıp sapmadığını kontrol et
+%    Kural 7: "Kullanıcı davranış süresi" normalden saptığında şüpheli.
 % ----------------------------------------------------------------------
 odeme_suresi_sapmasi(Kullanici) :-
     findall(DavranisSure,
@@ -32,20 +38,21 @@ odeme_suresi_sapmasi(Kullanici) :-
     son_odeme_suresi(Sureler, SonSure),
 
     debug_message('Son ödeme süresi: ~w', [SonSure]),
-    Limit is Ortalama * 1.5,  % %50 sapma limiti
+    Limit is Ortalama * 1.5,  % ±%50 sapma limiti
     debug_message('Sapma limiti: ~2f (Ortalama ± ~2f)', [Limit, Limit]),
 
     (   SonSure > Ortalama + Limit
      ;  SonSure < Ortalama - Limit
-    ->  alert_message(
-            'Ödeme süresi SAPMASI: Kullanıcı: ~w, Son Süre: ~w, Limit: ~2f (Ortalama ~2f)',
+    ->  % Kural 7 gereği: normalden çok farklı bir davranış süresi
+        alert_message(
+            'Kullanıcı ~w: DAVRANIŞ SÜRESİ SAPMASI! Son Süre: ~w, Limit: ~2f (Ortalama ~2f)',
             [Kullanici, SonSure, Limit, Ortalama]
         )
     ;   debug_message(
             'Ödeme süresi normal: Kullanıcı: ~w, Son Süre: ~w (Ortalama ~2f)',
             [Kullanici, SonSure, Ortalama]
         ),
-        fail  % Bu satır, "sapma yoksa" kuralı başarısız olsun ki "odeme_suresi_sapmasi/1" false dönsün
+        fail  % "sapma yok" => kural başarısız (false) döner
     ).
 
 % ----------------------------------------------------------------------
@@ -55,7 +62,7 @@ son_odeme_suresi(Sureler, SonSure) :-
     last(Sureler, SonSure).
 
 % ----------------------------------------------------------------------
-% Toplam hesaplama
+% Toplam hesaplama (liste elemanlarının toplamını bulur)
 % ----------------------------------------------------------------------
 toplam([], 0).
 toplam([H|T], Toplam) :-
@@ -64,15 +71,16 @@ toplam([H|T], Toplam) :-
 
 % ----------------------------------------------------------------------
 % 3) Test Sorgusu
-%    Bu sorgu, belirli kullanıcılar üzerinde ortalama ödeme süresi
-%    ve sapma kontrolünü otomatik şekilde yapar.
+%    Belirli kullanıcılar üzerinde ortalama ödeme süresi
+%    ve sapma kontrolünü otomatik şekilde yapar (Kural 7 testi).
 % ----------------------------------------------------------------------
 test_odeme_suresi :-
-    writeln('--- [TEST] Odeme Süresi Kontrolü Başlıyor... ---'),
+    writeln('--- [TEST] Odeme Süresi Kontrolü Başlıyor... ---'),    
+    writeln('--- [TEST] Kural 7 Çdeme Süresi Kontrolü Başlıyor... ---'),
+
     set_debug(true),
 
-    % Burada test etmek istediğiniz kullanıcıları belirtiyoruz.
-    % İsterseniz kullanıcı10, kullanıcıX vs. ekleyebilirsiniz.
+    % Kendi veri kümenizde var olan kullanıcıları ekleyebilirsiniz.
     forall(
         member(Kullanici,
                [kullanici1, kullanici2, kullanici3,
@@ -86,8 +94,6 @@ test_odeme_suresi :-
             ->  format(' - Hesaplanan ortalama ödeme süresi: ~2f~n', [OrtalamaHesaplandi])
             ;   format(' - Ortalama ödeme süresi hesaplanamadı (veri yok).~n', [])
             ),
-            % Sapma kontrolü: başarılı ise "sapma var" demektir.
-            % Başarısız (false) ise "sapma yok" demektir.
             (   odeme_suresi_sapmasi(Kullanici)
             ->  format(' - Son ödeme süresi ORTALAMADAN SAPTI!~n', [])
             ;   format(' - Son ödeme süresi normal sınırlar içinde.~n', [])

@@ -33,15 +33,6 @@
 % Açıklama:
 %   Belirli bir kullanıcının (Kullanici) belirlenen zaman aralığında
 %   (Baslangic-Bitis) yaptığı işlem sayısını (Sayi) döndürür.
-%
-% Parametreler:
-%   - Kullanici:   İşlemleri sayılacak kullanıcının kimliği.
-%   - Baslangic:   Zaman aralığının başlangıç değeri.
-%   - Bitis:       Zaman aralığının bitiş değeri.
-%   - Sayi:        Bulunan işlem sayısı (çıktı).
-%
-% Kullanım:
-%   ?- islem_sayisi(kullanici1, 0, 24, Sayi).
 %-----------------------------------------------------------------------------
 islem_sayisi(Kullanici, Baslangic, Bitis, Sayi) :-
     findall(1,
@@ -58,28 +49,21 @@ islem_sayisi(Kullanici, Baslangic, Bitis, Sayi) :-
 % supheli_islem/3
 %
 % Açıklama:
-%   Yukarıdaki islem_sayisi/4 ile elde edilen işlem sayısının, tanımlı
-%   bir eşik değeri (esik_degeri/1) aşıp aşmadığını kontrol eder.
-%   Aşarsa alert_message/2 ile “Şüpheli işlem sayısı” uyarısı yayınlar,
-%   değilse debug_message/2 ile “İşlem sayısı normal” der.
-%
-% Parametreler:
-%   - Kullanici:   Şüpheli işlem durumu kontrol edilecek kullanıcı.
-%   - Baslangic:   Zaman aralığı başlangıcı.
-%   - Bitis:       Zaman aralığı bitişi.
-%
-% Kullanım:
-%   ?- supheli_islem(kullanici1, 0, 24).
+%   islem_sayisi/4 ile elde edilen işlem sayısının, esik_degeri/1'de tanımlı
+%   eşik değeri aşıp aşmadığını kontrol eder. Aşıyorsa alert_message/2 ile 
+%   “Şüpheli işlem sayısı” uyarısı yayınlar, aksi halde debug_message/2 ile
+%   “İşlem sayısı normal” der.
 %-----------------------------------------------------------------------------
 supheli_islem(Kullanici, Baslangic, Bitis) :-
     esik_degeri(Esik),
     islem_sayisi(Kullanici, Baslangic, Bitis, Sayi),
     debug_message('Eşik değeri: ~w, İşlem sayısı: ~w', [Esik, Sayi]),
     ( Sayi > Esik ->
-        alert_message('Şüpheli işlem sayısı tespit edildi: Kullanıcı: ~w, İşlem Sayısı: ~w',
-                      [Kullanici, Sayi])
-    ;   debug_message('İşlem sayısı normal: Kullanıcı: ~w, İşlem Sayısı: ~w',
-                     [Kullanici, Sayi])
+        alert_message(
+            'Kural 1: Şüpheli işlem sayısı (>=~w) tespit edildi: Kullanıcı: ~w, İşlem Sayısı: ~w',
+            [Esik, Kullanici, Sayi]
+        )
+    ;   debug_message('Kullanıcı: ~w, İşlem sayısı normal: ~w', [Kullanici, Sayi])
     ).
 
 %-----------------------------------------------------------------------------
@@ -87,15 +71,10 @@ supheli_islem(Kullanici, Baslangic, Bitis) :-
 %
 % Açıklama:
 %   Şüpheli işlem olarak kabul edilebilecek üst sınırda kaç işlem 
-%   olduğuna dair sabit değeri tutar. Varsayılan olarak 3 verilmiştir.
-%
-% Parametreler:
-%   - Değer:  Eşik değer (çıktı).
-%
-% Kullanım:
-%   ?- esik_degeri(E).
+%   olduğuna dair sabit değeri tutar. İhtiyaç halinde bu değeri değiştirebilirsiniz.
 %-----------------------------------------------------------------------------
 esik_degeri(3).
+% Örneğin kuralda "10 işlem" deniyorsa, esik_degeri(10). yapabilirsiniz.
 
 %-----------------------------------------------------------------------------
 % test_islem_sikligi/0
@@ -103,12 +82,9 @@ esik_degeri(3).
 % Açıklama:
 %   Örnek kullanıcılar ve zaman aralıkları için supheli_islem/3 predikatını
 %   test eder. Debug modunu etkinleştirir ve sonuçları ekrana yazdırır.
-%
-% Kullanım:
-%   ?- test_islem_sikligi.
 %-----------------------------------------------------------------------------
 test_islem_sikligi :-
-    writeln('Test: islem_sikligi kontrolü başlıyor...'),
+    writeln('--- [TEST] Kural 1 (İşlem Sıklığı) Kontrolü Başlıyor... ---'),
     set_debug(true),
     forall(
         member((Kullanici, Baslangic, Bitis),
@@ -127,4 +103,5 @@ test_islem_sikligi :-
     ),
     set_debug(false),
     writeln('----------------------------------'),
-    writeln('Test tamamlandı.').
+    writeln('--- [TEST] Tamamlandı. ---').
+

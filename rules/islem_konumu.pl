@@ -23,7 +23,7 @@
 :- module(islem_konumu, [konum_uyusmazligi/1, test_konum_uyusmazligi/0]).
 
 % Bağlı modüllerin yüklenmesi
-:- use_module('../data/islem_verileri').  % Veri modülü
+:- use_module('../data/islem_verileri').  % Veri modülü (islem/11 tanımı)
 :- use_module('../utils/debug').          % Debug mesajlarını yönetir
 :- use_module('../utils/alert').          % Uyarı mesajlarını yönetir
 
@@ -56,6 +56,9 @@ kullanici_konumlari(Kullanici, Konumlar) :-
 %   Eğer birden fazla farklı konum varsa, alert_message/1 ile konum uyuşmazlığı
 %   uyarısı verir. 'Say > 1' koşulu ile belirlenir.
 %
+%   (Kural 4: İşlemin yapıldığı konum, önceki işlemlerindeki konumla
+%    uyuşmuyorsa şüpheli olabilir.)
+%
 % Parametreler:
 %   - Kullanici:  Konum uyuşmazlığı kontrolü yapılacak kullanıcı.
 %
@@ -67,7 +70,8 @@ konum_uyusmazligi(Kullanici) :-
     list_to_set(Konumlar, UnikKonumlar),
     length(UnikKonumlar, Say),
     debug_message('Farklı konum sayısı: ~w => ~w', [Kullanici, Say]),
-    Say > 1,  
+    % Eğer kullanıcının farklı konum sayısı 1'den büyükse, uyuşmazlık var
+    Say > 1,
     alert_message('Konum uyuşmazlığı tespit edildi!').
 
 %-----------------------------------------------------------------------------
@@ -82,7 +86,7 @@ konum_uyusmazligi(Kullanici) :-
 %   ?- test_konum_uyusmazligi.
 %-----------------------------------------------------------------------------
 test_konum_uyusmazligi :-
-    writeln('Test: konum_uyusmazligi kontrolü başlıyor...'),
+    writeln('--- [TEST] Kural 4 (İşlem Konumu) Kontrolü Başlıyor... ---'),
     set_debug(true),
     forall(
         member(Kullanici, [kullanici1, kullanici2, kullanici3, kullanici4]),
@@ -96,4 +100,4 @@ test_konum_uyusmazligi :-
     ),
     set_debug(false),
     writeln('----------------------------------'),
-    writeln('Test tamamlandı.').
+    writeln('--- [TEST] Tamamlandı. ---').

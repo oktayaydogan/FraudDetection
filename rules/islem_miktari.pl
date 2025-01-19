@@ -32,14 +32,11 @@
 %
 % Açıklama:
 %   Bir kullanıcının geçmiş tüm işlemlerine ait miktarların ortalamasını 
-%   hesaplar. Eğer kullanıcıya ait işlem bulunamazsa hata raporlar.
+%   hesaplar. Eğer kullanıcıya ait işlem bulunamazsa hata (fail) döndürür.
 %
 % Parametreler:
 %   - Kullanici: Kullanıcının kimliği/ID'si.
 %   - Ortalama:  Bulunan ortalama miktar (çıktı).
-%
-% Kullanım:
-%   ?- ortalama(kullanici1, O).
 %-----------------------------------------------------------------------------
 ortalama(Kullanici, Ortalama) :-
     findall(Miktar,
@@ -110,7 +107,8 @@ anormal_islem(Kullanici, Miktar) :-
 % Kullanım:
 %   ?- test_islem_miktari.
 %-----------------------------------------------------------------------------
-test_islem_miktari :-
+test_islem_miktari :-    
+    writeln('--- [TEST] Kural 2 (İşlem Miktarı) Kontrolü Başlıyor... ---'),
     writeln('Test: islem_miktari kontrolü başlıyor...'),
     set_debug(true),
     forall(
@@ -135,4 +133,4 @@ test_islem_miktari :-
     ),
     set_debug(false),
     writeln('----------------------------------'),
-    writeln('Test tamamlandı.').
+    writeln('--- [TEST] Tamamlandı. ---').
