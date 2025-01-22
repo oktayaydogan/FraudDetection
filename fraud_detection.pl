@@ -114,21 +114,28 @@ risk_skoru_islem(IslemId, Risk) :-
 % Kullanım:
 %   ?- risk_skoru_kullanici(kullanici1, ToplamRisk).
 %-----------------------------------------------------------------------------
-risk_skoru_kullanici(KullaniciX, ToplamRisk) :-
-  atom_string(Kullanici, KullaniciX),
-  
-  
-  % Kullanıcıya ait tüm işlemlerin IDsini toplayalım
-  findall(IslemId, islem(IslemId, Kullanici, _, _, _, _, _, _, _, _, _), IslemList),
+risk_skoru_kullanici(KullaniciX, OrtalamaRisk) :-
+    % Kullanıcı adını atom'a çevir (eğer string olarak geliyorsa)
+    atom_string(Kullanici, KullaniciX),
+
+    % Kullanıcıya ait tüm işlemlerin IDsini toplayalım
+    findall(IslemId, islem(IslemId, Kullanici, _, _, _, _, _, _, _, _, _), IslemList),
+
     % Her işlem ID için risk_skoru_islem/2 ile risk skoru hesaplayıp listeye alalım
     findall(Risk,
-            (member(IslemId, IslemList), 
-            writeln(IslemId),
-            risk_skoru_islem(IslemId, Risk)),
+            (member(IslemId, IslemList),
+             risk_skoru_islem(IslemId, Risk)),
             RiskList),
 
-    % Tüm risk skorlarını toplayarak kullanıcı için toplam risk skorunu elde edelim
-    sum_list(RiskList, ToplamRisk).
+    % RiskList boş mu kontrol edelim
+    (   RiskList = []
+    ->  OrtalamaRisk = 0  % Eğer hiç işlem yoksa ortalama risk 0 olarak kabul edilir
+    ;   % Tüm risk skorlarını toplayarak kullanıcı için toplam risk skorunu elde edelim
+        sum_list(RiskList, ToplamRisk),
+        length(RiskList, RiskListLength),
+        OrtalamaRisk is ToplamRisk / RiskListLength
+    ).
+
 
 %-----------------------------------------------------------------------------
 % sorgula/1

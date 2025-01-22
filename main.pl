@@ -7,17 +7,17 @@ kullanici_sorgula :-
     read_line_to_string(user_input, User),
     (   gpt_kullanici_sorgula(User, GptPuan)
         ->  
-            writeln("---------------------------------------------------------"),
+            writeln("-----------------------------------------------------------"),
             format("| Kullanıcı ~w için GPT dolandırıcılık riski puanı: ~w |~n", [User, GptPuan]),
-            writeln("---------------------------------------------------------")
+            writeln("-----------------------------------------------------------")
         ;   
             writeln("Belirtilen kullanıcı bulunamadı veya analiz yapılamadı.")
     ),
     (   fraud_kullanici_sorgula(User, FraudPuan)
         ->  
-            writeln("---------------------------------------------------------"),
+            writeln("----------------------------------------------------------"),
             format("| Kullanıcı ~w için PL dolandırıcılık riski puanı: ~w |~n", [User, FraudPuan]),
-            writeln("---------------------------------------------------------")
+            writeln("----------------------------------------------------------")
         ;   
             writeln("Belirtilen kullanıcı bulunamadı veya analiz yapılamadı.")
     ).
@@ -41,9 +41,9 @@ islem_sorgula :-
             (
                 fraud_islem_sorgula(TxIDNum, FraudPuan)
                 ->    
-                writeln("-------------------------------------------------------"),
+                writeln("------------------------------------------------------"),
                 format("| İşlem ID: ~w için PL dolandırıcılık riski puanı: ~w |~n", [TxIDNum, FraudPuan]),
-                writeln("-------------------------------------------------------")
+                writeln("------------------------------------------------------")
                 ;   
                 writeln("Belirtilen işlem ID bulunamadı veya analiz yapılamadı.")
             )
