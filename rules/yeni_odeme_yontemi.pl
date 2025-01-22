@@ -1,4 +1,4 @@
-:- module(kural9, [
+:- module(yeni_odeme_yontemi, [
     yeni_odeme_yontemi/1,
     test_yeni_odeme_yontemi/0
 ]).

@@ -1,0 +1,142 @@
+{
+	"rules": [
+		{
+			"id": 1,
+			"description": "Belirli bir süre içinde (24 saat) aynı kullanıcı tarafından yapılan işlem sayısı belirli bir eşik değeri aşıyorsa, dolandırıcılık şüphesi doğurabilir.",
+			"conditions": {
+				"time_window_hours": 24,
+				"max_transactions": 10,
+				"field": "transaction_count"
+			},
+			"label": "high-frequency",
+			"risk_score": 3
+		},
+		{
+			"id": 2,
+			"description": "Aynı kullanıcının işlem miktarı aniden artarsa ve bu miktar kullanıcının normal alışkanlıklarının dışındaysa, riskli bir işlem olarak değerlendirilmelidir.",
+			"conditions": {
+				"previous_max_amount": 1000,
+				"current_amount": { "gt": 5000 }
+			},
+			"label": "sudden-amount-increase",
+			"risk_score": 4
+		},
+		{
+			"id": 3,
+			"description": "Aynı IP adresi üzerinden kısa sürede birden fazla kullanıcı hesabı ile ödeme yapılmaya çalışılıyorsa, dolandırıcılık şüphesi doğurabilir.",
+			"conditions": {
+				"ip_address": "same",
+				"max_accounts": 5,
+				"time_window_minutes": 60
+			},
+			"label": "multiple-accounts-same-ip",
+			"risk_score": 5
+		},
+		{
+			"id": 4,
+			"description": "İşlemin yapıldığı konum (ülke) kullanıcının önceki işlemlerindeki konumla uyuşmuyorsa, dolandırıcılık şüphesi oluşturabilir.",
+			"conditions": {
+				"current_country": "different",
+				"previous_countries": ["TR"]
+			},
+			"label": "unusual-location",
+			"risk_score": 3
+		},
+		{
+			"id": 5,
+			"description": "İşlem aynı kullanıcı adına, farklı konumlardan (çok kısa sürede coğrafi olarak çok uzak konumlar arasında) yapılmaya çalışılıyorsa, dolandırıcılık şüphesi doğar.",
+			"conditions": {
+				"current_country": "different",
+				"time_between_transactions_minutes": 30,
+				"distance_km": { "gt": 1000 }
+			},
+			"label": "rapid-distant-transactions",
+			"risk_score": 4
+		},
+		{
+			"id": 6,
+			"description": "Kullanıcı daha önce hiç kullanmadığı bir cihaz veya tarayıcı ile işlem yapıyorsa, bu işlem daha yüksek risk kategorisinde değerlendirilir.",
+			"conditions": {
+				"device_new": true
+			},
+			"label": "new-device",
+			"risk_score": 2
+		},
+		{
+			"id": 7,
+			"description": "Kullanıcının oturum açma ve ödeme işlemlerindeki davranışları (tuşlama süresi, sayfa üzerinde gezinme hızı) normalden farklılık gösteriyorsa, dolandırıcılık olarak işaretlenebilir.",
+			"conditions": {
+				"behavior_anomalies": true
+			},
+			"label": "behavior-anomaly",
+			"risk_score": 3
+		},
+		{
+			"id": 8,
+			"description": "Kullanıcı oturum açtıktan sonra ödeme işlemlerine geçiş süresi normalden daha hızlıysa veya alışılmadık bir davranış sergiliyorsa, dolandırıcılık şüphesi oluşabilir.",
+			"conditions": {
+				"time_to_payment_seconds": { "lt": 10 }
+			},
+			"label": "rapid-payment",
+			"risk_score": 2
+		},
+		{
+			"id": 9,
+			"description": "Kullanıcı daha önce hiç kullanmadığı bir ödeme yöntemiyle işlem yapmaya çalışıyorsa, bu durum şüpheli olarak işaretlenebilir.",
+			"conditions": {
+				"payment_method_new": true
+			},
+			"label": "new-payment-method",
+			"risk_score": 3
+		},
+		{
+			"id": 10,
+			"description": "Aynı ödeme yöntemi (aynı kredi kartı) kısa süre içinde farklı hesaplardan ödeme yapmak için kullanılıyorsa, dolandırıcılık şüphesi oluşur.",
+			"conditions": {
+				"payment_method": "same",
+				"max_accounts": 3,
+				"time_window_minutes": 60
+			},
+			"label": "same-payment-method-multiple-accounts",
+			"risk_score": 4
+		},
+		{
+			"id": 11,
+			"description": "Aynı telefon numarası veya e-posta adresiyle birden fazla kullanıcı hesabı oluşturulmuşsa ve bu hesaplardan ödeme yapılmaya çalışılıyorsa, dolandırıcılık riski vardır.",
+			"conditions": {
+				"email_or_phone_shared": true,
+				"max_accounts": 5
+			},
+			"label": "shared-contact-details",
+			"risk_score": 5
+		},
+		{
+			"id": 12,
+			"description": "Kullanıcı tarafından yapılan bir ödeme işlemine dair kısa süre içinde şikayet veya para iade talebi gelirse, bu durum dolandırıcılık şüphesi doğurabilir.",
+			"conditions": {
+				"complaint_within_minutes": 30
+			},
+			"label": "quick-complaint",
+			"risk_score": 3
+		},
+		{
+			"id": 13,
+			"description": "Kullanıcının hesap bilgilerinde yapılan olağandışı değişiklikler (e-posta veya şifre değişikliği) sonrası hemen büyük bir işlem yapılması, dolandırıcılık olarak değerlendirilebilir.",
+			"conditions": {
+				"recent_account_changes": true,
+				"large_transaction_after_changes": true
+			},
+			"label": "post-change-large-transaction",
+			"risk_score": 4
+		},
+		{
+			"id": 14,
+			"description": "Her kural, belirli bir risk puanı ile ilişkilendirilebilir ve bu kuralların bir işlemde geçerli olması durumunda toplam bir risk skoru hesaplanır. Toplam risk skoru belirli bir eşik değeri geçtiğinde işlem şüpheli olarak değerlendirilir.",
+			"conditions": {
+				"risk_score_threshold": 7
+			},
+			"label": "overall-risk-threshold",
+			"risk_score": 0
+		}
+	]
+}

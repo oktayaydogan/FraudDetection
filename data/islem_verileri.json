@@ -2,7 +2,7 @@
 	"islemler": [
 		{
 			"id": 1,
-			"kullanici": "kullanici1",
+			"kullanici": "user1",
 			"miktar": 500,
 			"zaman": 10,
 			"konum": "Türkiye",
@@ -15,7 +15,7 @@
 		},
 		{
 			"id": 2,
-			"kullanici": "kullanici1",
+			"kullanici": "user1",
 			"miktar": 300,
 			"zaman": 15,
 			"konum": "Türkiye",
@@ -28,7 +28,7 @@
 		},
 		{
 			"id": 3,
-			"kullanici": "kullanici1",
+			"kullanici": "user1",
 			"miktar": 200,
 			"zaman": 20,
 			"konum": "ABD",
@@ -41,7 +41,7 @@
 		},
 		{
 			"id": 4,
-			"kullanici": "kullanici1",
+			"kullanici": "user1",
 			"miktar": 1000,
 			"zaman": 25,
 			"konum": "Türkiye",
@@ -54,7 +54,7 @@
 		},
 		{
 			"id": 5,
-			"kullanici": "kullanici1",
+			"kullanici": "user1",
 			"miktar": 0,
 			"zaman": 8,
 			"konum": "Türkiye",
@@ -68,7 +68,7 @@
 
 		{
 			"id": 6,
-			"kullanici": "kullanici2",
+			"kullanici": "user2",
 			"miktar": 700,
 			"zaman": 12,
 			"konum": "Türkiye",
@@ -81,7 +81,7 @@
 		},
 		{
 			"id": 7,
-			"kullanici": "kullanici2",
+			"kullanici": "user2",
 			"miktar": 3000,
 			"zaman": 18,
 			"konum": "Türkiye",
@@ -94,7 +94,7 @@
 		},
 		{
 			"id": 8,
-			"kullanici": "kullanici2",
+			"kullanici": "user2",
 			"miktar": 0,
 			"zaman": 20,
 			"konum": "Türkiye",
@@ -107,7 +107,7 @@
 		},
 		{
 			"id": 9,
-			"kullanici": "kullanici2",
+			"kullanici": "user2",
 			"miktar": 3000,
 			"zaman": 12,
 			"konum": "Türkiye",
@@ -121,7 +121,7 @@
 
 		{
 			"id": 10,
-			"kullanici": "kullanici3",
+			"kullanici": "user3",
 			"miktar": 500,
 			"zaman": 14,
 			"konum": "Türkiye",
@@ -134,7 +134,7 @@
 		},
 		{
 			"id": 11,
-			"kullanici": "kullanici3",
+			"kullanici": "user3",
 			"miktar": 600,
 			"zaman": 7,
 			"konum": "ABD",
@@ -147,7 +147,7 @@
 		},
 		{
 			"id": 12,
-			"kullanici": "kullanici3",
+			"kullanici": "user3",
 			"miktar": 400,
 			"zaman": 9,
 			"konum": "Türkiye",
@@ -160,7 +160,7 @@
 		},
 		{
 			"id": 13,
-			"kullanici": "kullanici3",
+			"kullanici": "user3",
 			"miktar": 100,
 			"zaman": 14,
 			"konum": "Türkiye",
@@ -174,7 +174,7 @@
 
 		{
 			"id": 14,
-			"kullanici": "kullanici4",
+			"kullanici": "user4",
 			"miktar": 1000,
 			"zaman": 30,
 			"konum": "Fransa",
@@ -187,7 +187,7 @@
 		},
 		{
 			"id": 15,
-			"kullanici": "kullanici4",
+			"kullanici": "user4",
 			"miktar": 0,
 			"zaman": 28,
 			"konum": "Fransa",
@@ -200,7 +200,7 @@
 		},
 		{
 			"id": 16,
-			"kullanici": "kullanici4",
+			"kullanici": "user4",
 			"miktar": 1500,
 			"zaman": 32,
 			"konum": "Almanya",
@@ -214,7 +214,7 @@
 
 		{
 			"id": 17,
-			"kullanici": "kullanici5",
+			"kullanici": "user5",
 			"miktar": 2000,
 			"zaman": 50,
 			"konum": "Türkiye",
@@ -227,7 +227,7 @@
 		},
 		{
 			"id": 18,
-			"kullanici": "kullanici5",
+			"kullanici": "user5",
 			"miktar": 100,
 			"zaman": 52,
 			"konum": "Türkiye",
@@ -240,7 +240,7 @@
 		},
 		{
 			"id": 19,
-			"kullanici": "kullanici5",
+			"kullanici": "user5",
 			"miktar": 0,
 			"zaman": 51,
 			"konum": "Türkiye",
@@ -254,7 +254,7 @@
 
 		{
 			"id": 20,
-			"kullanici": "kullanici6",
+			"kullanici": "user6",
 			"miktar": 500,
 			"zaman": 10,
 			"konum": "Türkiye",
@@ -267,7 +267,7 @@
 		},
 		{
 			"id": 21,
-			"kullanici": "kullanici6",
+			"kullanici": "user6",
 			"miktar": 700,
 			"zaman": 15,
 			"konum": "Türkiye",
@@ -280,7 +280,7 @@
 		},
 		{
 			"id": 22,
-			"kullanici": "kullanici6",
+			"kullanici": "user6",
 			"miktar": 800,
 			"zaman": 20,
 			"konum": "Türkiye",
@@ -293,7 +293,7 @@
 		},
 		{
 			"id": 23,
-			"kullanici": "kullanici6",
+			"kullanici": "user6",
 			"miktar": 900,
 			"zaman": 25,
 			"konum": "Türkiye",
@@ -307,7 +307,7 @@
 
 		{
 			"id": 24,
-			"kullanici": "kullanici7",
+			"kullanici": "user7",
 			"miktar": 300,
 			"zaman": 5,
 			"konum": "ABD",
@@ -320,7 +320,7 @@
 		},
 		{
 			"id": 25,
-			"kullanici": "kullanici7",
+			"kullanici": "user7",
 			"miktar": 400,
 			"zaman": 10,
 			"konum": "ABD",
@@ -333,7 +333,7 @@
 		},
 		{
 			"id": 26,
-			"kullanici": "kullanici7",
+			"kullanici": "user7",
 			"miktar": 500,
 			"zaman": 15,
 			"konum": "ABD",
@@ -346,7 +346,7 @@
 		},
 		{
 			"id": 27,
-			"kullanici": "kullanici7",
+			"kullanici": "user7",
 			"miktar": 600,
 			"zaman": 20,
 			"konum": "ABD",
@@ -360,7 +360,7 @@
 
 		{
 			"id": 28,
-			"kullanici": "kullanici8",
+			"kullanici": "user8",
 			"miktar": 200,
 			"zaman": 10,
 			"konum": "Türkiye",
@@ -373,7 +373,7 @@
 		},
 		{
 			"id": 29,
-			"kullanici": "kullanici8",
+			"kullanici": "user8",
 			"miktar": 300,
 			"zaman": 15,
 			"konum": "Türkiye",
@@ -386,7 +386,7 @@
 		},
 		{
 			"id": 30,
-			"kullanici": "kullanici8",
+			"kullanici": "user8",
 			"miktar": 400,
 			"zaman": 20,
 			"konum": "Türkiye",
@@ -399,7 +399,7 @@
 		},
 		{
 			"id": 31,
-			"kullanici": "kullanici8",
+			"kullanici": "user8",
 			"miktar": 500,
 			"zaman": 25,
 			"konum": "Türkiye",
@@ -413,7 +413,7 @@
 
 		{
 			"id": 32,
-			"kullanici": "kullanici9",
+			"kullanici": "user9",
 			"miktar": 50,
 			"zaman": 5,
 			"konum": "Türkiye",
@@ -426,7 +426,7 @@
 		},
 		{
 			"id": 33,
-			"kullanici": "kullanici9",
+			"kullanici": "user9",
 			"miktar": 60,
 			"zaman": 10,
 			"konum": "Türkiye",
@@ -439,7 +439,7 @@
 		},
 		{
 			"id": 34,
-			"kullanici": "kullanici9",
+			"kullanici": "user9",
 			"miktar": 70,
 			"zaman": 15,
 			"konum": "Türkiye",
@@ -452,7 +452,7 @@
 		},
 		{
 			"id": 35,
-			"kullanici": "kullanici9",
+			"kullanici": "user9",
 			"miktar": 80,
 			"zaman": 20,
 			"konum": "Türkiye",

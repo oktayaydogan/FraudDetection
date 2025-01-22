@@ -1,3 +1,5 @@
+:- module(fraud_detection, [kullanici_sorgula/1, islem_sorgula/1, tüm_kullanicilari_sorgula/0]).
+
 % fraud_detection.pl
 % 
 % Açıklama:
@@ -11,8 +13,8 @@
 %      ?- [fraud_detection].
 %
 %   2) Farklı sorgularla risk skorlarını hesaplayabilirsiniz:
-%      ?- sorgula(kullanici1).
-%      ?- islem_id_sorgula(1).
+%      ?- kullanici_sorgula(kullanici1).
+%      ?- islem_sorgula(1).
 %      ?- tüm_kullanicilari_sorgula.
 %
 % Gereksinimler:
@@ -136,9 +138,9 @@ risk_skoru_kullanici(Kullanici, ToplamRisk) :-
 %   - Kullanici:  Risk skoru sorgulanacak kullanıcı kimliği.
 %
 % Kullanım:
-%   ?- sorgula(kullanici1).
+%   ?- kullanici_sorgula(kullanici1).
 %-----------------------------------------------------------------------------
-sorgula(Kullanici) :-
+kullanici_sorgula(Kullanici) :-
     format('~nKullanıcı: ~w~n', [Kullanici]),
     risk_skoru_kullanici(Kullanici, ToplamRisk),
     format('Toplam Risk Skoru: ~w~n', [ToplamRisk]),
@@ -167,10 +169,10 @@ tüm_kullanicilari_sorgula :-
 
     % Her kullanıcı için sorgula/1 predikatını çalıştıralım
     forall(member(Kullanici, UnikKullanicilar),
-           sorgula(Kullanici)).
+           kullanici_sorgula(Kullanici)).
 
 %-----------------------------------------------------------------------------
-% islem_id_sorgula/1
+% islem_sorgula/1
 %
 % Açıklama:
 %   Belirli bir işlem ID'si hakkındaki temel bilgileri (Miktar, Zaman,
@@ -181,14 +183,16 @@ tüm_kullanicilari_sorgula :-
 %   - IslemId:  İncelenecek işlemin kimliği/ID'si.
 %
 % Kullanım:
-%   ?- islem_id_sorgula(1).
+%   ?- islem_sorgula(1).
 %-----------------------------------------------------------------------------
-islem_id_sorgula(IslemId) :-
+islem_sorgula(IslemId) :-
+    writeln('Bu özellik henüz desteklenmemektedir.').
+    
     % islem/11 ile işlem bilgilerini alalım
     islem(IslemId, Kullanici, Miktar, Zaman, Konum, Cihaz,
           DavranisSure, IslemTuru, IP, OdemeYontemi, Ekstra),
 
-    % Ekrana temel bilgiler
+    % % Ekrana temel bilgiler
     format('~nİşlem ID: ~w~n', [IslemId]),
     format('Kullanıcı: ~w~n', [Kullanici]),
     format('Miktar: ~w, Zaman: ~w, Konum: ~w, Cihaz: ~w~n',
@@ -205,11 +209,11 @@ islem_id_sorgula(IslemId) :-
 %-----------------------------------------------------------------------------
 % Örnek Sorgular:
 %
-% ?- sorgula(kullanici1).
-% ?- sorgula(kullanici2).
+% ?- kullanici_sorgula(kullanici1).
+% ?- kullanici_sorgula(kullanici2).
 %
-% ?- islem_id_sorgula(1).
-% ?- islem_id_sorgula(6).
+% ?- islem_sorgula(1).
+% ?- islem_sorgula(6).
 %
 % ?- tüm_kullanicilari_sorgula.
 %-----------------------------------------------------------------------------
