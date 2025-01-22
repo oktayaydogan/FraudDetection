@@ -1,4 +1,4 @@
-:- module(fraud_detection, [kullanici_sorgula/1, islem_sorgula/1, tüm_kullanicilari_sorgula/0]).
+:- module(fraud_detection, [fraud_kullanici_sorgula/2, fraud_islem_sorgula/2, tüm_kullanicilari_sorgula/0]).
 
 % fraud_detection.pl
 % 
@@ -13,8 +13,8 @@
 %      ?- [fraud_detection].
 %
 %   2) Farklı sorgularla risk skorlarını hesaplayabilirsiniz:
-%      ?- kullanici_sorgula(kullanici1).
-%      ?- islem_sorgula(1).
+%      ?- fraud_kullanici_sorgula(kullanici1).
+%      ?- fraud_islem_sorgula(1).
 %      ?- tüm_kullanicilari_sorgula.
 %
 % Gereksinimler:
@@ -114,13 +114,17 @@ risk_skoru_islem(IslemId, Risk) :-
 % Kullanım:
 %   ?- risk_skoru_kullanici(kullanici1, ToplamRisk).
 %-----------------------------------------------------------------------------
-risk_skoru_kullanici(Kullanici, ToplamRisk) :-
-    % Kullanıcıya ait tüm işlemlerin IDsini toplayalım
-    findall(IslemId, islem(IslemId, Kullanici, _, _, _, _, _, _, _, _, _), IslemList),
-
+risk_skoru_kullanici(KullaniciX, ToplamRisk) :-
+  atom_string(Kullanici, KullaniciX),
+  
+  
+  % Kullanıcıya ait tüm işlemlerin IDsini toplayalım
+  findall(IslemId, islem(IslemId, Kullanici, _, _, _, _, _, _, _, _, _), IslemList),
     % Her işlem ID için risk_skoru_islem/2 ile risk skoru hesaplayıp listeye alalım
     findall(Risk,
-            (member(IslemId, IslemList), risk_skoru_islem(IslemId, Risk)),
+            (member(IslemId, IslemList), 
+            writeln(IslemId),
+            risk_skoru_islem(IslemId, Risk)),
             RiskList),
 
     % Tüm risk skorlarını toplayarak kullanıcı için toplam risk skorunu elde edelim
@@ -138,17 +142,18 @@ risk_skoru_kullanici(Kullanici, ToplamRisk) :-
 %   - Kullanici:  Risk skoru sorgulanacak kullanıcı kimliği.
 %
 % Kullanım:
-%   ?- kullanici_sorgula(kullanici1).
+%   ?- fraud_kullanici_sorgula(kullanici1).
 %-----------------------------------------------------------------------------
-kullanici_sorgula(Kullanici) :-
-    format('~nKullanıcı: ~w~n', [Kullanici]),
-    risk_skoru_kullanici(Kullanici, ToplamRisk),
-    format('Toplam Risk Skoru: ~w~n', [ToplamRisk]),
-    ( ToplamRisk > 50
-    -> writeln('-> Yüksek Risk: İşlem incelemeye alınmalı.')
-    ;  writeln('-> Düşük Risk: İşlem normal.')
-    ),
-    writeln('-----------------------------------').
+fraud_kullanici_sorgula(Kullanici, ToplamRisk) :-
+  risk_skoru_kullanici(Kullanici, ToplamRisk).
+    % format('~nKullanıcı: ~w~n', [Kullanici]),
+    % risk_skoru_kullanici(Kullanici, ToplamRisk),
+    % format('Toplam Risk Skoru: ~w~n', [ToplamRisk]).
+    % ( ToplamRisk > 50
+    % -> writeln('-> Yüksek Risk: İşlem incelemeye alınmalı.')
+    % ;  writeln('-> Düşük Risk: İşlem normal.')
+    % ),
+    % writeln('-----------------------------------').
 
 %-----------------------------------------------------------------------------
 % tüm_kullanicilari_sorgula/0
@@ -169,10 +174,10 @@ tüm_kullanicilari_sorgula :-
 
     % Her kullanıcı için sorgula/1 predikatını çalıştıralım
     forall(member(Kullanici, UnikKullanicilar),
-           kullanici_sorgula(Kullanici)).
+           fraud_kullanici_sorgula(Kullanici, _Response)).
 
 %-----------------------------------------------------------------------------
-% islem_sorgula/1
+% fraud_islem_sorgula/1
 %
 % Açıklama:
 %   Belirli bir işlem ID'si hakkındaki temel bilgileri (Miktar, Zaman,
@@ -183,37 +188,38 @@ tüm_kullanicilari_sorgula :-
 %   - IslemId:  İncelenecek işlemin kimliği/ID'si.
 %
 % Kullanım:
-%   ?- islem_sorgula(1).
+%   ?- fraud_islem_sorgula(1).
 %-----------------------------------------------------------------------------
-islem_sorgula(IslemId) :-
-    writeln('Bu özellik henüz desteklenmemektedir.').
+fraud_islem_sorgula(IslemIdString, Risk) :-   
+  atom_number(IslemId, IslemIdString),
+  risk_skoru_islem(IslemId, Risk). 
+    % islem/11 ile işlem bilgilerini alalımfraud_islem_sorgula(IslemIdString, Risk) :-
     
-    % islem/11 ile işlem bilgilerini alalım
-    islem(IslemId, Kullanici, Miktar, Zaman, Konum, Cihaz,
-          DavranisSure, IslemTuru, IP, OdemeYontemi, Ekstra),
+    % islem(IslemId, Kullanici, Miktar, Zaman, Konum, Cihaz,
+    %   DavranisSure, IslemTuru, IP, OdemeYontemi, Ekstra),
 
     % % Ekrana temel bilgiler
-    format('~nİşlem ID: ~w~n', [IslemId]),
-    format('Kullanıcı: ~w~n', [Kullanici]),
-    format('Miktar: ~w, Zaman: ~w, Konum: ~w, Cihaz: ~w~n',
-           [Miktar, Zaman, Konum, Cihaz]),
-    format('Davranış Süresi: ~w, İşlem Türü: ~w, IP: ~w, Ödeme Yöntemi: ~w, Ekstra: ~w~n',
-           [DavranisSure, IslemTuru, IP, OdemeYontemi, Ekstra]),
-    writeln('-----------------------------------'),
+    % format('~nİşlem ID: ~w~n', [IslemId]),
+    % format('Kullanıcı: ~w~n', [Kullanici]),
+    % format('Miktar: ~w, Zaman: ~w, Konum: ~w, Cihaz: ~w~n',
+    %        [Miktar, Zaman, Konum, Cihaz]),
+    % format('Davranış Süresi: ~w, İşlem Türü: ~w, IP: ~w, Ödeme Yöntemi: ~w, Ekstra: ~w~n',
+    %        [DavranisSure, IslemTuru, IP, OdemeYontemi, Ekstra]),
+    % writeln('-----------------------------------'),
 
     % Risk skoru hesaplayalım
-    risk_skoru_islem(IslemId, Risk),
-    format('İşlem Risk Skoru: ~w~n', [Risk]),
-    writeln('-----------------------------------').
+    % risk_skoru_islem(IslemId, Risk),
+    % format('İşlem Risk Skoru: ~w~n', [Risk]),
+    % writeln('-----------------------------------').
 
 %-----------------------------------------------------------------------------
 % Örnek Sorgular:
 %
-% ?- kullanici_sorgula(kullanici1).
-% ?- kullanici_sorgula(kullanici2).
+% ?- fraud_kullanici_sorgula(kullanici1).
+% ?- fraud_kullanici_sorgula(kullanici2).
 %
-% ?- islem_sorgula(1).
-% ?- islem_sorgula(6).
+% ?- fraud_islem_sorgula(1).
+% ?- fraud_islem_sorgula(6).
 %
 % ?- tüm_kullanicilari_sorgula.
 %-----------------------------------------------------------------------------

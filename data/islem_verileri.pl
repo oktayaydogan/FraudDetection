@@ -10,7 +10,7 @@
 initialize_islem_data :-
     retractall(islem(_,_,_,_,_,_,_,_,_,_,_)),
     absolute_file_name('islem_verileri.json', JSONFile, [access(read), file_errors(fail)]),
-    format('[islem_verileri] JSON dosyası: ~w~n', [JSONFile]),
+    % format('[islem_verileri] JSON dosyası: ~w~n', [JSONFile]),
 
     open(JSONFile, read, Stream),
     json_read_dict(Stream, Dict),
@@ -35,7 +35,7 @@ load_islemler_list([Obj|Rest]) :-
     get_dict(odemeYontemi, Obj, OdemeYontemi),
     get_dict(alan,         Obj, Alan),
 
-    atom_string(ID,           IDString),
+    atom_number(ID,           IDString),
     atom_string(Kullanici,    KullaniciString),
 
     assertz(islem(

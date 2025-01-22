@@ -17,28 +17,31 @@
 
 % Konuşma geçmişine başlangıç olarak 'system' mesajı ekliyoruz.
 conversation([
-    _{ role: "system", content: "Sen bir fraud uzmanısın. Sana verilen kuralları ve verileri kullanarak işlemlerin dolandırıcılık risk analizini yapıyorsun. Analiz sonucunda işleme 100 üzerinden bir puan veriyorsun." }
+    _{ 
+        role: "system", 
+        content: "Sen bir fraud uzmanısın. Sana verilen kuralları ve verileri kullanarak işlemlerin dolandırıcılık risk analizini yapıyorsun. Analiz sonucunda işleme 100 üzerinden bir puan veriyorsun." 
+    }
 ]).
 
 %----------------------------------------------------------
 % JSON Dosyalarını Yükleme
 %----------------------------------------------------------
 load_json_files :-
-    writeln("JSON dosyaları yükleniyor..."),
+    % writeln("JSON dosyaları yükleniyor..."),
     (   load_islem_verileri
-    ->  writeln("İşlem verileri başarıyla yüklendi.")
-    ;   writeln("İşlem verilerini yüklerken hata oluştu."),
-        fail
+    % ->  writeln("İşlem verileri başarıyla yüklendi.")
+    % ;   writeln("İşlem verilerini yüklerken hata oluştu."),
+        % fail
     ),
     (   load_kurallar
-    ->  writeln("Kurallar başarıyla yüklendi.")
-    ;   writeln("Kuralları yüklerken hata oluştu."),
-        fail
+    % ->  writeln("Kurallar başarıyla yüklendi.")
+    % ;   writeln("Kuralları yüklerken hata oluştu."),
+        % fail
     ).
 
 % islem_verileri.json dosyasını yükler
 load_islem_verileri :-
-    writeln("islem_verileri.json dosyası okunuyor..."),
+    % writeln("islem_verileri.json dosyası okunuyor..."),
     (   catch(
             open('data/islem_verileri.json', read, Stream),
             Error,
@@ -62,9 +65,9 @@ load_islem_verileri :-
     retractall(islem_verisi(_)),
     (   IslemDict = _{islemler: IslemList},
         maplist(assert_islem_verisi, IslemList)
-    ->  writeln("İşlem verileri Prolog faktları olarak eklendi.")
-    ;   writeln("İşlem verilerini assert ederken hata oluştu."),
-        fail
+    % ->  writeln("İşlem verileri Prolog faktları olarak eklendi.")
+    % ;   writeln("İşlem verilerini assert ederken hata oluştu."),
+    %     fail
     ).
 
 % islem_verisi'yı assert eder
@@ -73,7 +76,7 @@ assert_islem_verisi(Item) :-
 
 % kurallar.json dosyasını yükler
 load_kurallar :-
-    writeln("kurallar.json dosyası okunuyor..."),
+    % writeln("kurallar.json dosyası okunuyor..."),
     (   catch(
             open('data/kurallar.json', read, Stream),
             Error,
@@ -97,9 +100,9 @@ load_kurallar :-
     retractall(kural(_)),
     (   KuralDict = _{rules: KuralList},
         maplist(assert_kural, KuralList)
-    ->  writeln("Kurallar Prolog faktları olarak eklendi.")
-    ;   writeln("Kuralları assert ederken hata oluştu."),
-        fail
+    % ->  writeln("Kurallar Prolog faktları olarak eklendi.")
+    % ;   writeln("Kuralları assert ederken hata oluştu."),
+    %     fail
     ).
 
 % kural'ı assert eder
@@ -118,7 +121,7 @@ dict_to_json_string(Dict, JSONString) :-
 % Kullanıcı Sorgulama
 %----------------------------------------------------------
 gpt_kullanici_sorgula(UserId, Response) :-
-    run,
+    load_json_files,
     % Sadece belirtilen kullanıcının işlemlerini al
     findall(Transaction, (islem_verisi(Transaction), Transaction.kullanici = UserId), UserTransactions),
     % Tüm işlemleri al (farklı bir değişken ismi kullanarak)
@@ -130,18 +133,19 @@ gpt_kullanici_sorgula(UserId, Response) :-
     % Prompt'u oluştur
     format_data_kullanici(UserId, UserTransactions, AllTransactions, RulesStr, Prompt),
     % ChatGPT API'sine gönder
-    chatgpt_api(Prompt, Response),
-    % writeln("ChatGPT Yanıtı:"),
-    writeln(Response).
+    chatgpt_api(Prompt, Response).
+    % Ekrana yanıtı yazdır
+    % writeln(Response).
 
 gpt_kullanici_sorgula(_UserId, _Response) :-
-    writeln("Belirtilen kullanıcı bulunamadı veya hiç işlem yapmamış.").
+    % writeln("Belirtilen kullanıcı bulunamadı veya hiç işlem yapmamış.").
+    fail.
 
 %----------------------------------------------------------
 % İşlem Sorgulama
 %----------------------------------------------------------
 gpt_islem_sorgula(TransactionId, Response) :-
-    run,
+    load_json_files,
     % Belirtilen işlem ID'sini bul
     islem_verisi(Transaction),
     Transaction.id = TransactionId,
@@ -153,12 +157,14 @@ gpt_islem_sorgula(TransactionId, Response) :-
     % Prompt'u oluştur
     format_data_islem(Transaction, AllTransactions, RulesStr, Prompt),
     % ChatGPT API'sine gönder
-    chatgpt_api(Prompt, Response),
-    writeln("ChatGPT Yanıtı:"),
-    writeln(Response).
+    chatgpt_api(Prompt, Response).
+    % writeln("ChatGPT Yanıtı:"),
+    % writeln(Response).
+    
 
-gpt_islem_sorgula(_TransactionId, _Result) :-
-    writeln("Belirtilen işlem ID'si bulunamadı.").
+gpt_islem_sorgula(_TransactionId, _Response) :-
+    % writeln("Belirtilen işlem ID bulunamadı.").
+    fail.
 
 %----------------------------------------------------------
 % Kuralları JSON String Olarak Yükleme
@@ -227,10 +233,10 @@ chatgpt_api(Prompt, Response) :-
                 request_header('Authorization'=API_KEY)
             ]
         ),
-        Error,
+        _Error,
         (
-            writeln("API isteği başarısız oldu:"),
-            writeln(Error),
+            % writeln("API isteği başarısız oldu:"),
+            % writeln(Error),
             fail
         )
     ),
@@ -240,10 +246,6 @@ chatgpt_api(Prompt, Response) :-
 
     % Asistanın döndürdüğü cevabı ayıklıyoruz
     explain_response(JSONResponse, AssistantMessage),
-
-    % Ekrana asistan yanıtını yazdıralım
-    % writeln("Asistanın cevabı:"),
-    % writeln(AssistantMessage),
 
     % Konuşma geçmişine asistanın cevabını da ekleyelim
     append(NewHistory, [_{role: "assistant", content: AssistantMessage}], UpdatedHistory),
@@ -264,9 +266,3 @@ explain_response(Response, Content) :-
     ChoiceJSON.message = Message,
     Message = json(MessageJSON),
     Content = MessageJSON.content.
-
-%----------------------------------------------------------
-% Main Run Predicate
-%----------------------------------------------------------
-run :-
-    load_json_files.
