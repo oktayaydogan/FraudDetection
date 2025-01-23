@@ -47,6 +47,13 @@
 :- use_module('../utils/alert').          % Uyarı mesajları (alert_message/1)
 
 %-----------------------------------------------------------------------------
+%   KURAL 5:
+%   "İşlem aynı kullanıcı adına, farklı konumlardan (örneğin çok kısa sürede coğrafi olarak çok uzak konumlar arasında) 
+%    yapılmaya çalışılıyorsa, dolandırıcılık şüphesi doğar."
+%
+%   Örnek: Kullanıcı önce Türkiye'den, hemen sonra ABD’den işlem yapmaya çalışıyorsa bu durum şüpheli olarak değerlendirilir.
+%
+%-----------------------------------------------------------------------------
 % kullanici_islemleri/2
 %
 % Açıklama:

@@ -37,6 +37,7 @@
 :- use_module('../data/islem_verileri').  % Veriler
 :- use_module('../utils/debug').          % Debug mesajları
 :- use_module('../utils/alert').          % Uyarı mesajları
+
 %-----------------------------------------------------------------------------
 %   KURAL 8:
 %   "Kullanıcı oturum açtıktan sonra ödeme işlemlerine geçiş süresi normalden daha hızlı
