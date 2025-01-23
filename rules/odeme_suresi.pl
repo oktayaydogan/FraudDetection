@@ -43,6 +43,15 @@
 :- use_module('../utils/alert').         % Alert mesajları
 
 % ----------------------------------------------------------------------
+%   KURAL 7:
+%   "Kullanıcının oturum açma ve ödeme işlemlerindeki davranışları (örneğin, tuşlama süresi,
+%    sayfa üzerinde gezinme hızı gibi) normalden farklılık gösteriyorsa, bu durum dolandırıcılık
+%    olarak işaretlenebilir."
+%
+%   Örnek: Kullanıcı oturum açtıktan sonra alışılmadık derecede hızlı bir şekilde ödeme işlemi
+%          yapıyorsa, bu durum şüpheli olabilir.
+%
+% ----------------------------------------------------------------------
 % ortalama_odeme_suresi/2
 %
 % Açıklama:
