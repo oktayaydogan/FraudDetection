@@ -40,6 +40,14 @@
 :- use_module('../utils/alert').          % Alert/uyarı mesajları
 
 %-----------------------------------------------------------------------------
+%   KURAL 2:
+%   "Aynı kullanıcının işlem miktarı aniden artarsa ve bu miktar kullanıcının
+%    normal alışkanlıklarının dışındaysa, riskli bir işlem olarak değerlendirilmelidir."
+% 
+%   Örnek: Kullanıcı daha önce en fazla 1000 TL'lik işlemler yaparken birden 5000 TL'lik
+%          bir işlem yaparsa bu durum şüpheli olarak işaretlenebilir.
+%
+%-----------------------------------------------------------------------------
 % ortalama/2
 %
 % Açıklama:
