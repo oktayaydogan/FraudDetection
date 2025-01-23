@@ -39,15 +39,14 @@
 :- use_module('../utils/debug').          % Debug mesajları
 :- use_module('../utils/alert').          % Alert (şüpheli) mesajları
 
-/* 
- * KURAL 9: 
- * "Kullanıcı daha önce hiç kullanmadığı bir ödeme yöntemiyle
- *  işlem yapıyorsa, bu durum şüpheli olarak işaretlenebilir."
- *
- * Mantık: "Son işlemdeki ödeme yöntemi, önceki yöntemler listesinde yoksa" 
- * => "Şüpheli" (alert_message)
- */
-
+% ----------------------------------------------------------------------
+%   KURAL 9: 
+%   "Kullanıcı daha önce hiç kullanmadığı bir ödeme yöntemiyle
+%    işlem yapıyorsa, bu durum şüpheli olarak işaretlenebilir."
+%  
+%   Örnek: Kullanıcı normalde Kredi Kartı kullanıyorsa ve bu sefer
+%          ilk defa E-Cüzdan kullanarak işlem yapıyorsa, şüpheli olabilir.
+%
 % ----------------------------------------------------------------------
 % yeni_odeme_yontemi/1
 %

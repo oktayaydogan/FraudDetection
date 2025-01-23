@@ -39,15 +39,14 @@
 :- use_module('../utils/debug').         % Debug mesajları
 :- use_module('../utils/alert').         % Alert mesajları
 
-/* 
- * KURAL 6: 
- * "Kullanıcı daha önce hiç kullanmadığı bir cihaz veya tarayıcı ile
- *  işlem yapıyorsa, bu işlem daha yüksek risk kategorisinde değerlendirilebilir."
- *
- * Örnek: Kullanıcı normalde Chrome tarayıcısını kullanıyorsa 
- *        ve bu sefer ilk defa Safari kullanarak işlem yapıyorsa, şüpheli olabilir.
- */
-
+% ----------------------------------------------------------------------
+%   KURAL 6: 
+%   "Kullanıcı daha önce hiç kullanmadığı bir cihaz veya tarayıcı ile
+%    işlem yapıyorsa, bu işlem daha yüksek risk kategorisinde değerlendirilebilir."
+%  
+%   Örnek: Kullanıcı normalde Chrome tarayıcısını kullanıyorsa 
+%          ve bu sefer ilk defa Safari kullanarak işlem yapıyorsa, şüpheli olabilir.
+%  
 % ----------------------------------------------------------------------
 % kullanici_cihazlari/3
 %
