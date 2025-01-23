@@ -40,6 +40,14 @@
 :- use_module('../utils/alert').          % Alert mesajları (alert_message/2)
 
 %-----------------------------------------------------------------------------
+%   KURAL 1:
+%   "Belirli bir süre içinde (örneğin, 24 saat) aynı kullanıcı tarafından yapılan
+%    işlem sayısı belirli bir eşik değeri aşıyorsa, bu durum dolandırıcılık şüphesi doğurabilir."
+%
+%   Örnek: Bir kullanıcı 24 saat içinde 10’dan fazla işlem yapıyorsa ve bu, kullanıcının
+%          normal işlem davranışlarına uymuyorsa, bu işlem şüpheli olarak işaretlenir.
+%
+%-----------------------------------------------------------------------------
 % islem_sayisi/4
 %
 % Açıklama:
