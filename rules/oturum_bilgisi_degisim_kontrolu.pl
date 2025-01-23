@@ -40,12 +40,14 @@
 :- use_module('../utils/debug').         % Debug mesajları
 :- use_module('../utils/alert').         % Alert mesajları
 
-/* 
- * Kural: Kullanıcı bir "degisim" (bilgi değişikliği) yaptıysa
- *        ve bu değişiklikten çok kısa süre içinde (≤5 birim) 
- *        bir "islem" (ödeme vs.) yapılıyorsa şüpheli olabilir.
- */
-
+% ----------------------------------------------------------------------
+%   KURAL 14:
+%   "Kullanıcının hesap bilgilerinde yapılan olağandışı değişiklikler (örneğin, e-posta veya şifre değişikliği)
+%    sonrası hemen büyük bir işlem yapılması, dolandırıcılık olarak değerlendirilebilir."
+%
+%   Örnek: Kullanıcı şifresini değiştirdikten hemen sonra büyük miktarda bir ödeme yapmak istiyorsa
+%          bu durum riskli olabilir.
+%
 % ----------------------------------------------------------------------
 % bilgi_degisim_riski/1
 %
