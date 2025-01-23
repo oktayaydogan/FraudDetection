@@ -42,16 +42,15 @@
 :- use_module('../utils/debug').         % Debug mesajları
 :- use_module('../utils/alert').         % Alert mesajları
 
-/* 
- * KURAL 12:
- * "Aynı telefon numarası veya e-posta adresiyle birden fazla kullanıcı 
- *  hesabı oluşturulmuşsa ve bu hesaplardan ödeme yapılmaya çalışılıyorsa, 
- *  dolandırıcılık riski vardır."
- *
- * Örnek: Aynı telefon numarasıyla birçok hesap varsa ve bu hesaplardan 
- *        farklı işlemler yapılmaya çalışılıyorsa, bu durum şüpheli olabilir.
- */
-
+% ----------------------------------------------------------------------
+%   KURAL 12:
+%   "Aynı telefon numarası veya e-posta adresiyle birden fazla kullanıcı 
+%    hesabı oluşturulmuşsa ve bu hesaplardan ödeme yapılmaya çalışılıyorsa, 
+%    dolandırıcılık riski vardır."
+%
+%   Örnek: Aynı telefon numarasıyla birçok hesap varsa ve bu hesaplardan 
+%          farklı işlemler yapılmaya çalışılıyorsa, bu durum şüpheli olabilir.
+%
 % ----------------------------------------------------------------------
 % tekrarli_bilgi/1
 %

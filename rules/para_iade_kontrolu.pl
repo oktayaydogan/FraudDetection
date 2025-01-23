@@ -40,15 +40,14 @@
 :- use_module('../utils/debug').         % Debug mesajları
 :- use_module('../utils/alert').         % Alert mesajları
 
-/* 
- * KURAL 13:
- * "Kullanıcı tarafından yapılan bir ödeme işlemine dair kısa süre içinde 
- *  şikayet veya para iade talebi gelirse, dolandırıcılık şüphesi doğurabilir."
- *
- * Örnek: Kullanıcı bir işlem yaptıktan kısa süre sonra 
- *        bu işlemi reddedip para iadesi talep ediyorsa şüpheli olabilir.
- */
-
+% ----------------------------------------------------------------------
+%   KURAL 13:
+%   "Kullanıcı tarafından yapılan bir ödeme işlemine dair kısa süre içinde 
+%    şikayet veya para iade talebi gelirse, dolandırıcılık şüphesi doğurabilir."
+%  
+%   Örnek: Kullanıcı bir işlem yaptıktan kısa süre sonra 
+%          bu işlemi reddedip para iadesi talep ediyorsa şüpheli olabilir.
+%  
 % ----------------------------------------------------------------------
 % para_iade_riski/1
 %
