@@ -39,6 +39,14 @@
 :- use_module('../utils/alert').          % Uyarı mesajlarını yönetir
 
 %-----------------------------------------------------------------------------
+%   KURAL 4:
+%   "İşlemin yapıldığı konum (ülke) kullanıcının önceki işlemlerindeki konumla
+%    uyuşmuyorsa, bu durum dolandırıcılık şüphesi oluşturabilir."
+%
+%   Örnek: Kullanıcı sürekli Türkiye’den işlem yaparken aniden farklı bir ülkeden
+%          (örneğin Almanya’dan) işlem yapıyorsa bu durum riskli olarak değerlendirilebilir.
+%
+%-----------------------------------------------------------------------------
 % kullanici_konumlari/2
 %
 % Açıklama:
@@ -67,9 +75,6 @@ kullanici_konumlari(Kullanici, Konumlar) :-
 %   Bir kullanıcının işlemlerinin kaç farklı konumdan yapıldığını kontrol eder.
 %   Eğer birden fazla farklı konum varsa, alert_message/1 ile konum uyuşmazlığı
 %   uyarısı verir. 'Say > 1' koşulu ile belirlenir.
-%
-%   (Kural 4: İşlemin yapıldığı konum, önceki işlemlerindeki konumla
-%    uyuşmuyorsa şüpheli olabilir.)
 %
 % Parametreler:
 %   - Kullanici:  Konum uyuşmazlığı kontrolü yapılacak kullanıcı.
