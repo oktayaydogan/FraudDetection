@@ -40,12 +40,14 @@
 :- use_module('../utils/debug').         % Debug mesajları
 :- use_module('../utils/alert').         % Alert mesajları
 
-/*
- * KURAL 10:
- * "Aynı ödeme yöntemi (örneğin aynı kredi kartı) kısa süre içinde farklı 
- *  hesaplarda kullanılıyorsa, dolandırıcılık şüphesi oluşur."
- */
-
+% ----------------------------------------------------------------------
+%   KURAL 10:
+%   "Aynı ödeme yöntemi (örneğin aynı kredi kartı) kısa süre içinde farklı 
+%    hesaplarda kullanılıyorsa, dolandırıcılık şüphesi oluşur."
+ 
+%   Örnek: Aynı kredi kartı kısa sürede farklı kullanıcı hesaplarında kullanılıyorsa,
+%          bu durum şüpheli olabilir.
+%
 % ----------------------------------------------------------------------
 % odeme_yontemi_kontrol/1
 %
