@@ -37,7 +37,15 @@
 :- use_module('../data/islem_verileri').  % Veriler
 :- use_module('../utils/debug').          % Debug mesajları
 :- use_module('../utils/alert').          % Uyarı mesajları
-
+%-----------------------------------------------------------------------------
+%   KURAL 8:
+%   "Kullanıcı oturum açtıktan sonra ödeme işlemlerine geçiş süresi normalden daha hızlı
+%    veya daha yavaşsa, bu durum dolandırıcılık şüphesi oluşturabilir."
+%  
+%   Örnek: Kullanıcı normalde oturum açtıktan sonra 5-10 dakika geçtikten sonra ödeme
+%          yaparken, bu sefer birkaç saniye içinde ödeme yapıyorsa bu durum şüpheli
+%          olarak değerlendirilir.
+%
 %-----------------------------------------------------------------------------
 % davranis_ortalama/2
 %
