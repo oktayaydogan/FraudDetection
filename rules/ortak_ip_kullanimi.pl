@@ -41,16 +41,15 @@
 :- use_module('../utils/debug').         % Debug mesajları
 :- use_module('../utils/alert').         % Alert mesajları
 
-/*
- * KURAL 3:
- * "Aynı IP adresi üzerinden kısa sürede birden fazla kullanıcı hesabı ile
- *  ödeme yapılmaya çalışılıyorsa, bu durum dolandırıcılık şüphesi doğurabilir."
- *
- * Örnek: Farklı kullanıcılar aynı IP adresinden işlem yapıyorsa,
- *        hele bir de bu işlemler kısa zaman aralıklarında gerçekleşiyorsa
- *        şüpheli olarak değerlendirilir.
- */
-
+% ----------------------------------------------------------------------
+%   KURAL 3:
+%   "Aynı IP adresi üzerinden kısa sürede birden fazla kullanıcı hesabı ile
+%    ödeme yapılmaya çalışılıyorsa, bu durum dolandırıcılık şüphesi doğurabilir."
+ 
+%   Örnek: Farklı kullanıcılar aynı IP adresinden işlem yapıyorsa,
+%          hele bir de bu işlemler kısa zaman aralıklarında gerçekleşiyorsa
+%          şüpheli olarak değerlendirilir.
+%
 % ----------------------------------------------------------------------
 % ip_adresinden_kullanicilar/2
 %
