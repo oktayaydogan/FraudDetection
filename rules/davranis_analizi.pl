@@ -1,9 +1,11 @@
 % davranis_analizi.pl
 %
 % Açıklama:
-%   Kullanıcıların işlem sürelerini analiz ederek ortalama, standart sapma ve
-%   son işlem süresindeki olağan dışı sapmaları tespit eder. Davranışsal anormallik
+%   Bu modül, kullanıcıların işlem sürelerini analiz ederek ortalama, standart sapma ve
+%   son işlem süresindeki olağan dışı sapmaları tespit eder. Davranışsal anormallikler
 %   (örneğin çok kısa ya da çok uzun işlem süreleri) tespit edilirse uyarı mesajı verir.
+%   Bu tür anormallikler, kullanıcı hesaplarının güvenliği açısından potansiyel riskler
+%   olarak değerlendirilebilir.
 %
 % Kullanım:
 %   1) Bu modülü Prolog ortamında yükleyin:
@@ -15,8 +17,18 @@
 %
 % Gereksinimler:
 %   - '../data/islem_verileri.pl' dosyasında 'islem/11' yapısının tanımlanmış olması.
-%   - '../utils/debug.pl' ve '../utils/alert.pl' dosyalarında debug_message/2,
-%     alert_message/1 ve set_debug/1 gibi araçların tanımlı olması.
+%     Örnek islem/11 yapısı:
+%     islem(ID, Kullanici, Tip, Zaman, Konum, Cihaz, DavranisSure, ...).
+%   - '../utils/debug.pl' dosyasında debug_message/2 ve set_debug/1 gibi yardımcı predikatların tanımlı olması.
+%   - '../utils/alert.pl' dosyasında alert_message/1 gibi fonksiyonların tanımlı olması (gerekirse).
+%
+% Sınırlamalar:
+%   - Bu modül, sadece 'DavranisSure' alanını kullanarak işlem sürelerini analiz eder.
+%   - Standart sapma hesaplaması, sadece mevcut işlem sürelerine dayanır. Geçmiş verilerle karşılaştırma yapmaz.
+%
+% Gelecek Geliştirmeler:
+%   - İşlem sürelerinin zaman içindeki değişimini analiz eden dinamik bir model eklenebilir.
+%   - Farklı kullanıcı grupları için özelleştirilmiş sapma katsayıları kullanılabilir.
 %
 % Modül Tanımı ve İhracı:
 :- module(davranis_analizi, [davranis_sapmasi/1, test_davranis_analizi/0]).
@@ -37,8 +49,9 @@
 %   - Kullanici:  Ortalama davranış süresi hesaplanacak kullanıcı.
 %   - Ortalama:   Hesaplanan ortalama (çıktı).
 %
-% Kullanım:
+% Örnek Kullanım:
 %   ?- davranis_ortalama(kullanici1, Ortalama).
+%   Ortalama = 15.7.
 %-----------------------------------------------------------------------------
 davranis_ortalama(Kullanici, Ortalama) :-
     findall(DavranisSure,
@@ -65,8 +78,9 @@ davranis_ortalama(Kullanici, Ortalama) :-
 %   - Kullanici:  Standart sapması hesaplanacak kullanıcı.
 %   - Sapma:      Hesaplanan standart sapma (çıktı).
 %
-% Kullanım:
+% Örnek Kullanım:
 %   ?- davranis_standart_sapma(kullanici1, Sapma).
+%   Sapma = 3.2.
 %-----------------------------------------------------------------------------
 davranis_standart_sapma(Kullanici, Sapma) :-
     findall(DavranisSure,
@@ -98,7 +112,7 @@ davranis_standart_sapma(Kullanici, Sapma) :-
 %   - Liste:  Toplamı alınacak liste.
 %   - Toplam: Listenin toplam değeri (çıktı).
 %
-% Kullanım:
+% Örnek Kullanım:
 %   ?- toplam([10, 20, 30], Sonuc).
 %   Sonuc = 60.
 %-----------------------------------------------------------------------------
@@ -119,9 +133,10 @@ toplam([H|T], Toplam) :-
 % Parametreler:
 %   - Kullanici:  Davranış süresi kontrolü yapılacak kullanıcı.
 %
-% Kullanım:
+% Örnek Kullanım:
 %   ?- davranis_sapmasi(kullanici1).
-%   Kullanıcı belirtilmemişse (var(Kullanici) -> alert_message).
+%   true.  % Eğer sapma varsa
+%   false. % Eğer sapma yoksa
 %-----------------------------------------------------------------------------
 davranis_sapmasi(Kullanici) :-
     ( var(Kullanici) ->
@@ -157,8 +172,17 @@ davranis_sapmasi(Kullanici) :-
 %   Belirli kullanıcılar (kullanici1, kullanici2, vb.) üzerinde 
 %   davranis_sapmasi/1 predikatını test eder. Sonuçlar konsola yazdırılır.
 %
-% Kullanım:
+% Örnek Kullanım:
 %   ?- test_davranis_analizi.
+%
+% Örnek Çıktı:
+%   --- [TEST] Kural 8 (İşlem Sıklığı) Kontrolü Başlıyor... ---
+%   ----------------------------------
+%   Kullanıcı: kullanici1, Sonuç: Davranış süresi sapıyor.
+%   ----------------------------------
+%   Kullanıcı: kullanici2, Sonuç: Davranış süresi normal.
+%   ----------------------------------
+%   --- [TEST] Tamamlandı. ---
 %-----------------------------------------------------------------------------
 test_davranis_analizi :-
     writeln('--- [TEST] Kural 8 (İşlem Sıklığı) Kontrolü Başlıyor... ---'),

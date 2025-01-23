@@ -1,3 +1,35 @@
+% ----------------------------------------------------------------------
+% chatgpt.pl
+%
+% Açıklama:
+%   Bu modül, GPT tabanlı bir model kullanarak kullanıcılar ve işlemler üzerinde dolandırıcılık risk analizi yapar.
+%   Modül, JSON dosyalarından işlem verilerini ve kuralları yükler, bu verileri kullanarak GPT API'sine sorgular gönderir
+%   ve dönen yanıtları işler. Kullanıcılar ve işlemler için dolandırıcılık risk puanları hesaplanır.
+%
+% Kullanım:
+%   1) Prolog ortamında bu dosyayı yükleyin:
+%      ?- [chatgpt].
+%
+%   2) Kullanıcı veya işlem sorgulaması yapın:
+%      - Kullanıcı sorgulama: gpt_kullanici_sorgula(KullaniciID, Puan).
+%      - İşlem sorgulama: gpt_islem_sorgula(IslemID, Puan).
+%
+% Gereksinimler:
+%   - SWI-Prolog kütüphaneleri: http/http_client, http/http_json, http/json, lists, pcre.
+%   - OpenAI API anahtarı (API_KEY).
+%   - JSON formatında işlem verileri (islem_verileri.json) ve kurallar (kurallar.json).
+%
+% Sınırlamalar:
+%   - API istekleri internet bağlantısı gerektirir.
+%   - JSON dosyalarının doğru formatta olması gerekmektedir.
+%   - Hatalı kullanıcı veya işlem ID'leri için analiz yapılamaz.
+%
+% Gelecek Geliştirmeler:
+%   - Daha detaylı hata yönetimi ve loglama özellikleri eklenebilir.
+%   - Farklı dil modelleri veya API'ler entegre edilebilir.
+%   - Kullanıcı dostu bir arayüz (GUI) eklenebilir.
+%
+% Modül Tanımı ve İhracı:
 :- module(chatgpt, [gpt_kullanici_sorgula/2, gpt_islem_sorgula/2]).
 
 :- use_module(library(http/http_client)).

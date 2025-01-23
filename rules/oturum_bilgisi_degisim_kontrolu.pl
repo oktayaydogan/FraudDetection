@@ -1,8 +1,41 @@
+% oturum_bilgisi_degisim_kontrolu.pl
+%
+% Açıklama:
+%   Bu modül, kullanıcının bilgi değişikliği (örneğin, şifre veya iletişim bilgisi değişikliği)
+%   yaptıktan sonra çok kısa süre içinde bir işlem (ödeme vb.) yapıp yapmadığını kontrol eder.
+%   Bu tür durumlar, dolandırıcılık şüphesi olarak değerlendirilebilir ve uyarı (alert_message/2)
+%   verilir.
+%
+% Kullanım:
+%   1) Prolog ortamında bu dosyayı yükleyin:
+%      ?- [oturum_bilgisi_degisim_kontrolu].
+%
+%   2) Predikatları aşağıdaki gibi test edebilirsiniz:
+%      ?- bilgi_degisim_riski(kullanici1).
+%      ?- test_bilgi_degisim_riski.
+%
+% Gereksinimler:
+%   - '../data/islem_verileri.pl' içinde islem/11 tanımı olması.
+%     Örnek islem/11 yapısı:
+%     islem(ID, Kullanici, Miktar, Zaman, Konum, Cihaz, _, Tip, _, _, _).
+%   - '../utils/debug.pl' ve '../utils/alert.pl' dosyalarında debug_message/2,
+%     set_debug/1, alert_message/2 vb. tanımlı olması.
+%
+% Sınırlamalar:
+%   - Bu modül, sadece 'degisim' ve 'islem' tipindeki işlemleri analiz eder.
+%   - Zaman farkı kontrolü için sabit bir eşik değeri (5 birim) kullanılır.
+%
+% Gelecek Geliştirmeler:
+%   - Zaman farkı eşik değerini dinamik olarak değiştirebilme özelliği eklenebilir.
+%   - Farklı bilgi değişikliği türleri için özelleştirilmiş eşik değerleri kullanılabilir.
+%
+% Modül Tanımı ve İhracı:
 :- module(oturum_bilgisi_degisim_kontrolu, [
     bilgi_degisim_riski/1,
     test_bilgi_degisim_riski/0
 ]).
 
+% Gerekli modüllerin dahil edilmesi
 :- use_module('../data/islem_verileri'). % Veriler dahil ediliyor
 :- use_module('../utils/debug').         % Debug mesajları
 :- use_module('../utils/alert').         % Alert mesajları
@@ -13,11 +46,21 @@
  *        bir "islem" (ödeme vs.) yapılıyorsa şüpheli olabilir.
  */
 
-/* 
- * 1) bilgi_degisim_riski/1
- *    => Kullanıcının degisim ve islem kayıtlarını toplar,
- *       kontrol fonksiyonuna gönderir.
- */
+% ----------------------------------------------------------------------
+% bilgi_degisim_riski/1
+%
+% Açıklama:
+%   Kullanıcının bilgi değişikliği ve işlem kayıtlarını toplar ve kontrol eder.
+%   Eğer bilgi değişikliğinden kısa süre sonra bir işlem yapılmışsa, uyarı verir.
+%
+% Parametreler:
+%   - Kullanici: Kontrol edilecek kullanıcı kimliği.
+%
+% Örnek Kullanım:
+%   ?- bilgi_degisim_riski(kullanici1).
+%   true.  % Eğer şüpheli işlem varsa
+%   false. % Eğer şüpheli işlem yoksa
+% ----------------------------------------------------------------------
 bilgi_degisim_riski(Kullanici) :-
     findall((DegisimZamani, DegisimID),
             islem(DegisimID, Kullanici, _, DegisimZamani, _, _, _, 'degisim', _, _, _),
@@ -30,12 +73,17 @@ bilgi_degisim_riski(Kullanici) :-
     % Eğer degisim ya da islem listesi boşsa, yine de kontrol predikatına gidecek
     bilgi_degisim_kontrol(Degisimler, Islemler).
 
-/*
- * 2) bilgi_degisim_kontrol/2
- *    => Her degisim kaydı için, tüm islem kayıtlarına bakar
- *       (zaman farkı ≤5) olursa alert verir.
- *    => Tüm degisim kayıtları işlendiğinde biter.
- */
+% ----------------------------------------------------------------------
+% bilgi_degisim_kontrol/2
+%
+% Açıklama:
+%   Her bilgi değişikliği kaydı için, tüm işlem kayıtlarına bakar.
+%   Eğer zaman farkı ≤5 ise uyarı verir.
+%
+% Parametreler:
+%   - Degisimler: (Zaman, ID) çiftlerinden oluşan bilgi değişikliği listesi.
+%   - Islemler:   (Zaman, ID) çiftlerinden oluşan işlem listesi.
+% ----------------------------------------------------------------------
 bilgi_degisim_kontrol([], _) :-
     debug_message('Bilgi değişikliği sonrası işlem kontrolü tamamlandı. Tüm değişiklikler incelendi.'),
     !.
@@ -46,12 +94,18 @@ bilgi_degisim_kontrol([(DegisimZamani, DegisimID)|KalanDegisimler], Islemler) :-
     % Sonra kalan degisim kayıtlarına geçelim
     bilgi_degisim_kontrol(KalanDegisimler, Islemler).
 
-/*
- * 3) degisim_islemlerini_karsilastir/3
- *    => Tek bir degisim kaydını, tüm islem kayıtlarıyla karşılaştırır.
- *       Eşleşen (fark ≤5) bulursak alert mesajı verir.
- *       Hiçbiri uymuyorsa sadece debug bir mesaj olabilir.
- */
+% ----------------------------------------------------------------------
+% degisim_islemlerini_karsilastir/3
+%
+% Açıklama:
+%   Tek bir bilgi değişikliği kaydını, tüm işlem kayıtlarıyla karşılaştırır.
+%   Eğer zaman farkı ≤5 ise uyarı verir.
+%
+% Parametreler:
+%   - DegisimZamani: Bilgi değişikliğinin zamanı.
+%   - DegisimID:     Bilgi değişikliğinin ID'si.
+%   - Islemler:      (Zaman, ID) çiftlerinden oluşan işlem listesi.
+% ----------------------------------------------------------------------
 degisim_islemlerini_karsilastir(_, _, []) :-
     debug_message('Bu degisim için yakın zamanlı işlem bulunamadı.'),
     !.
@@ -69,11 +123,27 @@ degisim_islemlerini_karsilastir(DegisimZamani, DegisimID, [_|KalanIslemler]) :-
     % Burada abs(fark) > 5 demek
     degisim_islemlerini_karsilastir(DegisimZamani, DegisimID, KalanIslemler).
 
-/*
- * 4) test_bilgi_degisim_riski/0
- *    => Belirli kullanıcılar üzerinde toplu test yapar.
- *       Her kullanıcıda "degisim -> islem" şüpheli durum var mı" diye bakar.
- */
+% ----------------------------------------------------------------------
+% test_bilgi_degisim_riski/0
+%
+% Açıklama:
+%   Belirli kullanıcılar üzerinde toplu test yapar. Her kullanıcıda "degisim -> islem"
+%   şüpheli durum var mı diye kontrol eder.
+%
+% Örnek Kullanım:
+%   ?- test_bilgi_degisim_riski.
+%
+% Örnek Çıktı:
+%   --- [TEST] Kural 14: Bilgi Değişikliği Sonrası İşlem Kontrolü Başlıyor... ---
+%   ----------------------------------
+%   Kullanıcı: kullanici1
+%    - Kontrol tamamlandı, olası şüpheli işlemler üstte listelenir.
+%   ----------------------------------
+%   Kullanıcı: kullanici4
+%    - Kontrol başarısız veya veri yok.
+%   ----------------------------------
+%   --- [TEST] Tamamlandı. ---
+% ----------------------------------------------------------------------
 test_bilgi_degisim_riski :-
     writeln('--- [TEST] Kural 14: Bilgi Değişikliği Sonrası İşlem Kontrolü Başlıyor... ---'),
     set_debug(true),

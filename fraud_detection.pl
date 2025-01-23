@@ -1,28 +1,38 @@
-:- module(fraud_detection, [fraud_kullanici_sorgula/2, fraud_islem_sorgula/2, tüm_kullanicilari_sorgula/0]).
-
+% ----------------------------------------------------------------------
 % fraud_detection.pl
-% 
+%
 % Açıklama:
-%   Bu dosya, farklı modüllerde tanımlı kuralları (islem_sikligi,
-%   islem_miktari, islem_konumu vb.) kullanarak kullanıcı ve işlem
-%   risk skorlarını hesaplar. Kural/modül yüklemeleri, risk analiz
-%   predikatları ve raporlama predikatları içerir.
+%   Bu modül, kullanıcılar ve işlemler üzerinde dolandırıcılık risk analizi yapar.
+%   Farklı kurallar (örneğin işlem sıklığı, işlem miktarı, konum uyuşmazlığı vb.)
+%   kullanılarak her bir işlem ve kullanıcı için risk skorları hesaplanır.
+%   Bu skorlar, dolandırıcılık şüphesi olan işlemleri tespit etmek için kullanılır.
 %
 % Kullanım:
-%   1) SWI-Prolog veya benzeri bir Prolog ortamında bu dosyayı yükleyin:
+%   1) Prolog ortamında bu dosyayı yükleyin:
 %      ?- [fraud_detection].
 %
-%   2) Farklı sorgularla risk skorlarını hesaplayabilirsiniz:
-%      ?- fraud_kullanici_sorgula(kullanici1).
-%      ?- fraud_islem_sorgula(1).
-%      ?- tüm_kullanicilari_sorgula.
+%   2) Aşağıdaki predikatları kullanarak sorgular yapın:
+%      - Kullanıcı sorgulama: fraud_kullanici_sorgula(KullaniciID, Risk).
+%      - İşlem sorgulama: fraud_islem_sorgula(IslemID, Risk).
+%      - Tüm kullanıcıları sorgulama: tüm_kullanicilari_sorgula.
 %
 % Gereksinimler:
-%   - data/islem_verileri.pl dosyasında 'islem/11' verisinin tanımlı 
-%     olması (islem(Id, Kullanici, Miktar, Zaman, Konum, Cihaz, 
-%     DavranisSure, IslemTuru, IP, OdemeYontemi, Ekstra)).
-%   - rules/* dosyalarında ilgili analiz kurallarının tanımlanmış olması.
+%   - 'data/islem_verileri.pl' dosyasında 'islem/11' verisinin tanımlı olması.
+%   - 'rules/*.pl' dosyalarında ilgili analiz kurallarının tanımlanmış olması.
+%
+% Sınırlamalar:
+%   - İşlem verilerinin ve kuralların doğru formatta olması gerekmektedir.
+%   - Risk skorları, kurallara bağlı olarak hesaplanır; kuralların güncelliği önemlidir.
+%
+% Gelecek Geliştirmeler:
+%   - Daha fazla kural eklenerek risk analizi detaylandırılabilir.
+%   - Raporlama ve loglama özellikleri eklenebilir.
+%   - Kullanıcı dostu bir arayüz (GUI) entegre edilebilir.
+%
+% Modül Tanımı ve İhracı:
+:- module(fraud_detection, [fraud_kullanici_sorgula/2, fraud_islem_sorgula/2, tüm_kullanicilari_sorgula/0]).
 
+% Gerekli modüllerin yüklenmesi
 :- use_module('data/islem_verileri').      % Tüm işlem verilerini yükler
 :- use_module('rules/islem_sikligi').      % İşlem sıklığı kuralları
 :- use_module('rules/islem_miktari').      % İşlem miktarı kuralları
@@ -136,9 +146,8 @@ risk_skoru_kullanici(KullaniciX, OrtalamaRisk) :-
         OrtalamaRisk is ToplamRisk / RiskListLength
     ).
 
-
 %-----------------------------------------------------------------------------
-% sorgula/1
+% fraud_kullanici_sorgula/2
 %
 % Açıklama:
 %   Tek bir kullanıcıyı (Kullanici) sorgular. Kullanıcının toplam
@@ -147,27 +156,20 @@ risk_skoru_kullanici(KullaniciX, OrtalamaRisk) :-
 %
 % Parametreler:
 %   - Kullanici:  Risk skoru sorgulanacak kullanıcı kimliği.
+%   - ToplamRisk: Hesaplanan risk skoru (çıktı).
 %
 % Kullanım:
-%   ?- fraud_kullanici_sorgula(kullanici1).
+%   ?- fraud_kullanici_sorgula(kullanici1, Risk).
 %-----------------------------------------------------------------------------
 fraud_kullanici_sorgula(Kullanici, ToplamRisk) :-
   risk_skoru_kullanici(Kullanici, ToplamRisk).
-    % format('~nKullanıcı: ~w~n', [Kullanici]),
-    % risk_skoru_kullanici(Kullanici, ToplamRisk),
-    % format('Toplam Risk Skoru: ~w~n', [ToplamRisk]).
-    % ( ToplamRisk > 50
-    % -> writeln('-> Yüksek Risk: İşlem incelemeye alınmalı.')
-    % ;  writeln('-> Düşük Risk: İşlem normal.')
-    % ),
-    % writeln('-----------------------------------').
 
 %-----------------------------------------------------------------------------
 % tüm_kullanicilari_sorgula/0
 %
 % Açıklama:
 %   Sistemde var olan tüm kullanıcıları (işlem tablosunda geçen)
-%   bulur, her biri için sorgula/1 predikatını çağırır.
+%   bulur, her biri için fraud_kullanici_sorgula/2 predikatını çağırır.
 %
 % Kullanım:
 %   ?- tüm_kullanicilari_sorgula.
@@ -179,12 +181,12 @@ tüm_kullanicilari_sorgula :-
     % Yinelenen kullanıcı adlarını set haline getirelim
     list_to_set(KullaniciListesi, UnikKullanicilar),
 
-    % Her kullanıcı için sorgula/1 predikatını çalıştıralım
+    % Her kullanıcı için fraud_kullanici_sorgula/2 predikatını çalıştıralım
     forall(member(Kullanici, UnikKullanicilar),
            fraud_kullanici_sorgula(Kullanici, _Response)).
 
 %-----------------------------------------------------------------------------
-% fraud_islem_sorgula/1
+% fraud_islem_sorgula/2
 %
 % Açıklama:
 %   Belirli bir işlem ID'si hakkındaki temel bilgileri (Miktar, Zaman,
@@ -193,40 +195,23 @@ tüm_kullanicilari_sorgula :-
 %
 % Parametreler:
 %   - IslemId:  İncelenecek işlemin kimliği/ID'si.
+%   - Risk:     Hesaplanan risk skoru (çıktı).
 %
 % Kullanım:
-%   ?- fraud_islem_sorgula(1).
+%   ?- fraud_islem_sorgula(1, Risk).
 %-----------------------------------------------------------------------------
 fraud_islem_sorgula(IslemIdString, Risk) :-   
   atom_number(IslemId, IslemIdString),
-  risk_skoru_islem(IslemId, Risk). 
-    % islem/11 ile işlem bilgilerini alalımfraud_islem_sorgula(IslemIdString, Risk) :-
-    
-    % islem(IslemId, Kullanici, Miktar, Zaman, Konum, Cihaz,
-    %   DavranisSure, IslemTuru, IP, OdemeYontemi, Ekstra),
-
-    % % Ekrana temel bilgiler
-    % format('~nİşlem ID: ~w~n', [IslemId]),
-    % format('Kullanıcı: ~w~n', [Kullanici]),
-    % format('Miktar: ~w, Zaman: ~w, Konum: ~w, Cihaz: ~w~n',
-    %        [Miktar, Zaman, Konum, Cihaz]),
-    % format('Davranış Süresi: ~w, İşlem Türü: ~w, IP: ~w, Ödeme Yöntemi: ~w, Ekstra: ~w~n',
-    %        [DavranisSure, IslemTuru, IP, OdemeYontemi, Ekstra]),
-    % writeln('-----------------------------------'),
-
-    % Risk skoru hesaplayalım
-    % risk_skoru_islem(IslemId, Risk),
-    % format('İşlem Risk Skoru: ~w~n', [Risk]),
-    % writeln('-----------------------------------').
+  risk_skoru_islem(IslemId, Risk).
 
 %-----------------------------------------------------------------------------
 % Örnek Sorgular:
 %
-% ?- fraud_kullanici_sorgula(kullanici1).
-% ?- fraud_kullanici_sorgula(kullanici2).
+% ?- fraud_kullanici_sorgula(kullanici1, Risk).
+% ?- fraud_kullanici_sorgula(kullanici2, Risk).
 %
-% ?- fraud_islem_sorgula(1).
-% ?- fraud_islem_sorgula(6).
+% ?- fraud_islem_sorgula(1, Risk).
+% ?- fraud_islem_sorgula(6, Risk).
 %
 % ?- tüm_kullanicilari_sorgula.
 %-----------------------------------------------------------------------------

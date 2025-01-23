@@ -1,9 +1,11 @@
 % islem_miktari.pl
 %
 % Açıklama:
-%   Kullanıcının işlem miktarlarını analiz ederek ortalama hesaplar
+%   Bu modül, kullanıcının işlem miktarlarını analiz ederek ortalama hesaplar
 %   (ortalama/2) ve anormal miktarları (ortalamanın belirli bir katsayısı
-%   üzerindeki değerler) tespit eder (anormal_islem/2).
+%   üzerindeki değerler) tespit eder (anormal_islem/2). Anormal işlemler,
+%   kullanıcı hesaplarının güvenliği açısından potansiyel riskler olarak
+%   değerlendirilebilir.
 %
 % Kullanım:
 %   1) Prolog ortamında bu dosyayı yükleyin:
@@ -16,8 +18,18 @@
 %
 % Gereksinimler:
 %   - '../data/islem_verileri.pl' içinde islem/11 tanımı olması.
+%     Örnek islem/11 yapısı:
+%     islem(ID, Kullanici, Miktar, Zaman, Konum, Cihaz, _, _, _, _, _).
 %   - '../utils/debug.pl' ve '../utils/alert.pl' dosyalarında debug_message/2,
 %     set_debug/1, alert_message/2 vb. tanımlı olması.
+%
+% Sınırlamalar:
+%   - Bu modül, sadece 'Miktar' alanını kullanarak işlem miktarlarını analiz eder.
+%   - Anormal işlem tespiti için sabit bir katsayı (örn. 3) kullanılır.
+%
+% Gelecek Geliştirmeler:
+%   - Katsayıyı dinamik olarak değiştirebilme özelliği eklenebilir.
+%   - Zaman içinde işlem miktarlarının değişimini analiz eden dinamik bir model eklenebilir.
 %
 % Modül Tanımı ve İhracı:
 :- module(islem_miktari, [ortalama/2, anormal_islem/2, test_islem_miktari/0]).
@@ -37,6 +49,10 @@
 % Parametreler:
 %   - Kullanici: Kullanıcının kimliği/ID'si.
 %   - Ortalama:  Bulunan ortalama miktar (çıktı).
+%
+% Örnek Kullanım:
+%   ?- ortalama(kullanici1, Ortalama).
+%   Ortalama = 1200.5.
 %-----------------------------------------------------------------------------
 ortalama(Kullanici, Ortalama) :-
     findall(Miktar,
@@ -61,7 +77,7 @@ ortalama(Kullanici, Ortalama) :-
 %   - Liste:   Toplamı alınacak sayı listesi.
 %   - Toplam:  Sonuç olarak elde edilen toplam (çıktı).
 %
-% Kullanım:
+% Örnek Kullanım:
 %   ?- toplam([10,20,30], Sonuc).
 %   Sonuc = 60.
 %-----------------------------------------------------------------------------
@@ -83,8 +99,10 @@ toplam([H|T], Toplam) :-
 %   - Kullanici: Anormalliği kontrol edilecek kullanıcı kimliği.
 %   - Miktar:    İncelenecek işlemin miktarı.
 %
-% Kullanım:
+% Örnek Kullanım:
 %   ?- anormal_islem(kullanici1, 5000).
+%   true.  % Eğer anormal işlem varsa
+%   false. % Eğer anormal işlem yoksa
 %-----------------------------------------------------------------------------
 anormal_islem(Kullanici, Miktar) :-
     ortalama(Kullanici, Ortalama),
@@ -104,8 +122,19 @@ anormal_islem(Kullanici, Miktar) :-
 %   anormal_islem kontrolleri yapar. Debug modunu açıp kapatarak detaylı 
 %   mesaj çıktıları verir.
 %
-% Kullanım:
+% Örnek Kullanım:
 %   ?- test_islem_miktari.
+%
+% Örnek Çıktı:
+%   --- [TEST] Kural 2 (İşlem Miktarı) Kontrolü Başlıyor... ---
+%   ----------------------------------
+%   Kullanıcı: kullanici1, Ortalama: 1200.5
+%   Kullanıcı: kullanici1, Miktar: 1200 => İşlem normal.
+%   ----------------------------------
+%   Kullanıcı: kullanici2, Ortalama: 800.0
+%   Kullanıcı: kullanici2, Miktar: 8000 => Anormal işlem tespit edildi.
+%   ----------------------------------
+%   --- [TEST] Tamamlandı. ---
 %-----------------------------------------------------------------------------
 test_islem_miktari :-    
     writeln('--- [TEST] Kural 2 (İşlem Miktarı) Kontrolü Başlıyor... ---'),

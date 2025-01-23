@@ -1,10 +1,11 @@
 % islem_konumu.pl
 %
 % Açıklama:
-%   Belirli bir kullanıcının farklı konumlardan (şehir, ülke vb.) işlem
+%   Bu modül, belirli bir kullanıcının farklı konumlardan (şehir, ülke vb.) işlem
 %   yapıp yapmadığını kontrol eder. Eğer bir kullanıcının önceki işlemleri
 %   birden çok farklı konumdan gelmişse, 'konum_uyusmazligi/1' predikatı
-%   uyarı (alert_message/1) verebilir.
+%   uyarı (alert_message/1) verebilir. Bu tür durumlar, kullanıcı hesaplarının
+%   güvenliği açısından potansiyel riskler olarak değerlendirilebilir.
 %
 % Kullanım:
 %   1) Bu modülü Prolog ortamına yükleyin:
@@ -16,8 +17,18 @@
 %
 % Gereksinimler:
 %   - '../data/islem_verileri.pl' dosyasında islem/11 tanımı olması.
-%   - '../utils/debug.pl' içinde debug_message/2, set_debug/1 vb.
-%   - '../utils/alert.pl' içinde alert_message/1 vb.
+%     Örnek islem/11 yapısı:
+%     islem(ID, Kullanici, Tip, Zaman, Konum, Cihaz, _, _, _, _, _).
+%   - '../utils/debug.pl' içinde debug_message/2, set_debug/1 gibi yardımcı predikatların tanımlı olması.
+%   - '../utils/alert.pl' içinde alert_message/1 gibi fonksiyonların tanımlı olması (gerekirse).
+%
+% Sınırlamalar:
+%   - Bu modül, sadece 'Konum' alanını kullanarak işlem konumlarını analiz eder.
+%   - Konum bilgisi, işlem verilerinde doğru ve tutarlı bir şekilde sağlanmalıdır.
+%
+% Gelecek Geliştirmeler:
+%   - Konumlar arasındaki mesafe hesaplamaları eklenebilir.
+%   - Zaman içinde konum değişikliklerini analiz eden dinamik bir model eklenebilir.
 %
 % Modül Tanımı ve İhracı:
 :- module(islem_konumu, [konum_uyusmazligi/1, test_konum_uyusmazligi/0]).
@@ -39,8 +50,9 @@
 %   - Kullanici:  Konumları listelenecek kullanıcı kimliği.
 %   - Konumlar:   Kullanıcının işlemlerinde kullanılan konumların listesi (çıktı).
 %
-% Kullanım:
+% Örnek Kullanım:
 %   ?- kullanici_konumlari(kullanici1, Konumlar).
+%   Konumlar = ['İstanbul', 'Ankara'].
 %-----------------------------------------------------------------------------
 kullanici_konumlari(Kullanici, Konumlar) :-
     findall(Konum,
@@ -62,8 +74,10 @@ kullanici_konumlari(Kullanici, Konumlar) :-
 % Parametreler:
 %   - Kullanici:  Konum uyuşmazlığı kontrolü yapılacak kullanıcı.
 %
-% Kullanım:
+% Örnek Kullanım:
 %   ?- konum_uyusmazligi(kullanici1).
+%   true.  % Eğer konum uyuşmazlığı varsa
+%   false. % Eğer konum uyuşmazlığı yoksa
 %-----------------------------------------------------------------------------
 konum_uyusmazligi(Kullanici) :-
     kullanici_konumlari(Kullanici, Konumlar),
@@ -82,8 +96,17 @@ konum_uyusmazligi(Kullanici) :-
 %   Debug modunu etkinleştirerek (set_debug(true)), ekrana ayrıntılı bilgi
 %   yazdırır. Test bittiğinde debug kapatılır.
 %
-% Kullanım:
+% Örnek Kullanım:
 %   ?- test_konum_uyusmazligi.
+%
+% Örnek Çıktı:
+%   --- [TEST] Kural 4 (İşlem Konumu) Kontrolü Başlıyor... ---
+%   ----------------------------------
+%   Kullanıcı: kullanici1, Konum uyuşmazlığı tespit edildi.
+%   ----------------------------------
+%   Kullanıcı: kullanici2, Konum uyuşmazlığı tespit edilemedi.
+%   ----------------------------------
+%   --- [TEST] Tamamlandı. ---
 %-----------------------------------------------------------------------------
 test_konum_uyusmazligi :-
     writeln('--- [TEST] Kural 4 (İşlem Konumu) Kontrolü Başlıyor... ---'),

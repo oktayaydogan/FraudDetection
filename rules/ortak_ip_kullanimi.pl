@@ -1,9 +1,42 @@
+% ortak_ip_kullanimi.pl
+%
+% Açıklama:
+%   Bu modül, aynı IP adresi üzerinden kısa sürede birden fazla kullanıcı hesabı ile
+%   ödeme yapılıp yapılmadığını kontrol eder. Bu tür durumlar, dolandırıcılık şüphesi
+%   olarak değerlendirilebilir ve uyarı (alert_message/2) verilir.
+%
+% Kullanım:
+%   1) Prolog ortamında bu dosyayı yükleyin:
+%      ?- [ortak_ip_kullanimi].
+%
+%   2) Predikatları aşağıdaki gibi test edebilirsiniz:
+%      ?- ayni_ip_kontrol('192.168.1.1', Sonuc).
+%      ?- ip_adresinden_islemler('192.168.1.1', Islemler).
+%      ?- test_ortak_ip.
+%
+% Gereksinimler:
+%   - '../data/islem_verileri.pl' içinde islem/11 tanımı olması.
+%     Örnek islem/11 yapısı:
+%     islem(ID, Kullanici, Miktar, Zaman, Konum, Cihaz, _, _, IP, OdemeYontemi, _).
+%   - '../utils/debug.pl' ve '../utils/alert.pl' dosyalarında debug_message/2,
+%     set_debug/1, alert_message/2 vb. tanımlı olması.
+%
+% Sınırlamalar:
+%   - Bu modül, sadece 'IP' alanını kullanarak işlemleri analiz eder.
+%   - Zaman farkı kontrolü için sabit bir eşik değeri (5 birim) kullanılır.
+%
+% Gelecek Geliştirmeler:
+%   - Zaman farkı eşik değerini dinamik olarak değiştirebilme özelliği eklenebilir.
+%   - Farklı IP adresleri için özelleştirilmiş eşik değerleri kullanılabilir.
+%
+% Modül Tanımı ve İhracı:
 :- module(ortak_ip_kullanimi, [
     ayni_ip_kontrol/2,
     ip_adresinden_islemler/2,
     test_ortak_ip/0
 ]).
 
+% Gerekli modüllerin dahil edilmesi
 :- use_module('../data/islem_verileri'). % Veriler dahil ediliyor
 :- use_module('../utils/debug').         % Debug mesajları
 :- use_module('../utils/alert').         % Alert mesajları
@@ -18,7 +51,20 @@
  *        şüpheli olarak değerlendirilir.
  */
 
-% 1) Belirli bir IP adresinden işlem yapan kullanıcıları listeleme
+% ----------------------------------------------------------------------
+% ip_adresinden_kullanicilar/2
+%
+% Açıklama:
+%   Belirli bir IP adresinden işlem yapan kullanıcıları listeler.
+%
+% Parametreler:
+%   - IP:               Kontrol edilecek IP adresi.
+%   - KullaniciListesi: Bu IP adresinden işlem yapan kullanıcıların listesi (çıktı).
+%
+% Örnek Kullanım:
+%   ?- ip_adresinden_kullanicilar('192.168.1.1', KullaniciListesi).
+%   KullaniciListesi = [kullanici1, kullanici2].
+% ----------------------------------------------------------------------
 ip_adresinden_kullanicilar(IP, KullaniciListesi) :-
     findall(Kullanici,
             islem(_, Kullanici, _, _, _, _, _, _, IP, _, _),
@@ -26,8 +72,22 @@ ip_adresinden_kullanicilar(IP, KullaniciListesi) :-
     list_to_set(TumKullanicilar, KullaniciListesi),
     debug_message('IP adresinden işlem yapan kullanıcılar: ~w => ~w', [IP, KullaniciListesi]).
 
-% 2) Aynı IP adresinden birden fazla kullanıcı işlem yapmış mı VE kısa süre faktörü
-%    - Hem kullanıcı sayısına hem de zaman aralığına bakıyoruz.
+% ----------------------------------------------------------------------
+% ayni_ip_kontrol/2
+%
+% Açıklama:
+%   Aynı IP adresinden birden fazla kullanıcı işlem yapmış mı ve bu işlemler
+%   kısa süre içinde gerçekleşmiş mi kontrol eder. Eğer şüpheli bir durum varsa,
+%   uyarı verir.
+%
+% Parametreler:
+%   - IP:     Kontrol edilecek IP adresi.
+%   - Sonuc:  Kontrol sonucu ('Şüpheli' veya 'Normal').
+%
+% Örnek Kullanım:
+%   ?- ayni_ip_kontrol('192.168.1.1', Sonuc).
+%   Sonuc = 'Şüpheli'.
+% ----------------------------------------------------------------------
 ayni_ip_kontrol(IP, Sonuc) :-
     % Tüm işlemleri çekip zaman sırasına göre sıralayalım:
     findall((Zaman, Kullanici),
@@ -57,13 +117,21 @@ ayni_ip_kontrol(IP, Sonuc) :-
         )
     ).
 
-/*
- * 3) Yardımcı kural: farkli_kullanicilar_kisa_sure/2
- *    => Liste halindeki (Zaman,Kullanici) çiftlerine bakar,
- *       ardışık iki işlemde Kullanıcı farklı VE zaman farkı <= Limit ise true döner.
- *
- * Örn: Limit = 5 => "5 birimden kısa zamanda kullanıcı değişimi oldu mu?"
- */
+% ----------------------------------------------------------------------
+% farkli_kullanicilar_kisa_sure/2
+%
+% Açıklama:
+%   Liste halindeki (Zaman,Kullanici) çiftlerine bakar. Ardışık iki işlemde
+%   kullanıcı farklı VE zaman farkı <= Limit ise true döner.
+%
+% Parametreler:
+%   - Islemler: (Zaman, Kullanici) çiftlerinden oluşan işlem listesi.
+%   - Limit:    Zaman farkı için eşik değeri.
+%
+% Örnek Kullanım:
+%   ?- farkli_kullanicilar_kisa_sure([(100, kullanici1), (105, kullanici2)], 5).
+%   true.
+% ----------------------------------------------------------------------
 farkli_kullanicilar_kisa_sure([(Z1, U1), (Z2, U2) | _Kalan], Limit) :-
     U1 \== U2,             % Farklı kullanıcı
     Z2 - Z1 =< Limit,      % Kısa zaman aralığı
@@ -75,14 +143,47 @@ farkli_kullanicilar_kisa_sure(_Liste, _Limit) :-
     % Liste 0 veya 1 elemanlı kaldıysa ya da taradıkça bulamadıysak
     false.
 
-% 4) Belirtilen IP adresinden yapılan tüm işlemleri listeleme
+% ----------------------------------------------------------------------
+% ip_adresinden_islemler/2
+%
+% Açıklama:
+%   Belirtilen IP adresinden yapılan tüm işlemleri listeler.
+%
+% Parametreler:
+%   - IP:       Kontrol edilecek IP adresi.
+%   - Islemler: Bu IP adresinden yapılan işlemlerin listesi (çıktı).
+%
+% Örnek Kullanım:
+%   ?- ip_adresinden_islemler('192.168.1.1', Islemler).
+%   Islemler = [(1, kullanici1, 100, 'Cihaz1', 'Kredi Kartı'), ...].
+% ----------------------------------------------------------------------
 ip_adresinden_islemler(IP, Islemler) :-
     findall((ID, Kullanici, Zaman, Cihaz, OdemeYontemi),
             islem(ID, Kullanici, _, Zaman, _, Cihaz, _, _, IP, OdemeYontemi, _),
             Islemler),
     debug_message('IP adresinden yapılan işlemler: ~w => ~w', [IP, Islemler]).
 
-% 5) Basit test sorgusu
+% ----------------------------------------------------------------------
+% test_ortak_ip/0
+%
+% Açıklama:
+%   Belirli IP adresleri üzerinde otomatik kontrol yapar. Debug modunu
+%   etkinleştirir ve sonuçları ekrana yazdırır.
+%
+% Örnek Kullanım:
+%   ?- test_ortak_ip.
+%
+% Örnek Çıktı:
+%   --- [TEST] Kural 3: Aynı IP üzerinden kısa sürede çoklu kullanıcı kontrolü başlıyor... ---
+%   ----------------------------------
+%   Kontrol edilen IP: 192.168.1.1
+%    - Sonuç: Şüpheli
+%   ----------------------------------
+%   Kontrol edilen IP: 10.0.0.2
+%    - Sonuç: Normal
+%   ----------------------------------
+%   --- [TEST] Tamamlandı. ---
+% ----------------------------------------------------------------------
 test_ortak_ip :-
     writeln('--- [TEST] Kural 3: Aynı IP üzerinden kısa sürede çoklu kullanıcı kontrolü başlıyor... ---'),
     set_debug(true),
